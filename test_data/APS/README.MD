@@ -1,9 +1,14 @@
+ # APS_aff_mapping.csv
+Over 100K manually assigned affiliation string-ROR ID string pairs, covering 5726 total records distinct ROR IDs provided by the American Physical Society. Dataset also includes the DOI from which the affiliation string was derived and a cumulative count of how many times the affiliation string has been asserted in the APS data.
+
+# Statuses
+
 | status   | count |
 |----------|-------|
 | active   | 5712  |
 | inactive | 14    |
 
-
+# Types
 | type        | count |
 |-------------|-------|
 | Facility    | 1278  |
@@ -15,7 +20,7 @@
 | Nonprofit   | 106   |
 | Other       | 54    |
 
-
+# Countries
 | country                | count |
 |------------------------|-------|
 | United States          | 1018  |
