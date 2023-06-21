@@ -12,12 +12,12 @@ def load_results_set(f):
 def calculate_counts(results_set):
     true_pos = sum(1 for row in results_set if row['match'] == 'Y' and row['predicted_ror_id'])
     false_pos = sum(1 for row in results_set if row['match'] == 'N')
-    false_nef = sum(1 for row in results_set if row['match'] == 'NP')
-    return true_pos, false_pos, false_nef
+    false_neg = sum(1 for row in results_set if row['match'] == 'NP')
+    return true_pos, false_pos, false_neg
 
-def calculate_metrics(true_pos, false_pos, false_nef):
+def calculate_metrics(true_pos, false_pos, false_neg):
     precision = true_pos / (true_pos + false_pos) if true_pos + false_pos > 0 else 0
-    recall = true_pos / (true_pos + false_nef) if true_pos + false_nef > 0 else 0
+    recall = true_pos / (true_pos + false_neg) if true_pos + false_neg > 0 else 0
     f1_score = 2 * (precision * recall) / (precision + recall) if precision + recall > 0 else 0
     return precision, recall, f1_score
 
@@ -31,11 +31,11 @@ def write_to_csv(data, filename):
 if __name__ == "__main__":
     output_data = []
     for file in glob.glob("*.csv"):
+        print(file)
         results_set = load_results_set(file)
-        true_pos, false_pos, false_nef = calculate_counts(results_set)
-        precision, recall, f1_score = calculate_metrics(true_pos, false_pos, false_nef)
+        true_pos, false_pos, false_neg = calculate_counts(results_set)
+        precision, recall, f1_score = calculate_metrics(true_pos, false_pos, false_neg)
         output_data.append([file, precision, recall, f1_score])
-    
     current_directory = os.path.basename(os.getcwd())
     output_filename = f"{current_directory}_metrics.csv"
     write_to_csv(output_data, output_filename)
