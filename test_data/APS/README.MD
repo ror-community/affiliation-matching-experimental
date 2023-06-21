@@ -1,5 +1,5 @@
  # APS_aff_mapping.csv
-~150K manually assigned affiliation string-ROR ID string pairs, covering 5726 total records distinct ROR IDs provided by the American Physical Society. Dataset also includes the DOI from which the affiliation string was derived and a cumulative count of how many times the affiliation string has been asserted in the APS data.
+~15K manually assigned affiliation string-ROR ID string pairs, covering 5726 total records distinct ROR IDs provided by the American Physical Society. Dataset also includes the DOI from which the affiliation string was derived and a cumulative count of how many times the affiliation string has been asserted in the APS data.
 
 # Statuses
 
