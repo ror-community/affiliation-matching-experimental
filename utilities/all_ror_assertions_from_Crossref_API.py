@@ -1,8 +1,8 @@
 import csv
 import requests
 
-def get_api_results(base_url, params):
-    response = requests.get(base_url, params=params)
+def get_api_results(base_url, params, headers):
+    response = requests.get(base_url, params=params, headers=headers) 
     if response.status_code != 200:
         print(f"Request failed with {response.status_code} error")
         return None
@@ -27,37 +27,35 @@ def parse_api_results(items):
     return results
 
 
-def get_and_parse_all_results(base_url, params, rows=1000):
-    all_results = []
-    cursor ='*'
-    while True:
-        params['rows'] = rows
-        params['cursor'] = cursor
-        message = get_api_results(base_url, params)
-        if message is None or not message:
-            break
-        items = message.get('items', [])
-        results = parse_api_results(items)
-        all_results.extend(results)
-        cursor = message.get('next-cursor', None)
-        if cursor is None:
-            break
-    all_results = list(set(all_results))
-    return all_results
-
-
-def write_to_csv(results, filename):
+def get_and_parse_all_results(base_url, params, headers, filename, rows=1000):
+    i = 0
     with open(filename, 'w') as f:
         writer = csv.writer(f)
         writer.writerow(['affiliation', 'ror_id'])
-        for result in results:
-            writer.writerow(result)
-
+        cursor ='*'
+        while True:
+            i += 1
+            params['rows'] = rows
+            params['cursor'] = cursor
+            message = get_api_results(base_url, params, headers)
+            if message:
+                items = message.get('items', [])
+                if items:
+                    print(f'{str(len(items))}')
+                    for result in set(results):
+                        writer.writerow(result)
+                    cursor = message.get('next-cursor', None)
+                else:
+                    break
+            else:
+                break
 
 if __name__ == "__main__":
     base_url = 'https://api.crossref.org/works'
-    params = {'filter': 'has-ror-id:t', 'rows':1000}
-    all_results = get_and_parse_all_results(base_url, params)
-    write_to_csv(all_results, 'crossref_api_has_ror.csv')
+    # Add Metadata Plus credentials or remove token from headers
+    headers = {'Crossref-Plus-API-Token': '', 'User-Agent': ''}
+    params = {'filter': 'has-ror-id:t'}
+    get_and_parse_all_results(base_url, params, headers, 'crossref_api_has_ror.csv')
     print("Done parsing all data and writing to CSV")
+
 
