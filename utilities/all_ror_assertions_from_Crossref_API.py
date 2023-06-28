@@ -1,15 +1,13 @@
 import csv
-import json
 import requests
-from itertools import groupby
 
-def get_api_results(query_url):
-    response = requests.get(query_url)
+def get_api_results(base_url, params):
+    response = requests.get(base_url, params=params)
     if response.status_code != 200:
         print(f"Request failed with {response.status_code} error")
         return None
-    results = json.loads(response.text)
-    return results['message']['items']
+    results = response.json()
+    return results['message']
 
 
 def parse_api_results(items):
@@ -29,32 +27,37 @@ def parse_api_results(items):
     return results
 
 
-def get_and_parse_all_offsets(base_url, rows=1000):
-    all_offsets = []
-    start_index = 0
+def get_and_parse_all_results(base_url, params, rows=1000):
+    all_results = []
+    cursor ='*'
     while True:
-        url = f"{base_url}&rows={rows}&offset={start_index}"
-        items = get_api_results(url)
-        if items is None:
+        params['rows'] = rows
+        params['cursor'] = cursor
+        message = get_api_results(base_url, params)
+        if message is None or not message:
             break
+        items = message.get('items', [])
         results = parse_api_results(items)
-        all_offsets.extend(results)
-        all_offsets = list(set(all_offsets))
-        start_index += rows
-    return all_offsets
+        all_results.extend(results)
+        cursor = message.get('next-cursor', None)
+        if cursor is None:
+            break
+    all_results = list(set(all_results))
+    return all_results
 
 
-def write_to_csv(offsets, filename):
+def write_to_csv(results, filename):
     with open(filename, 'w') as f:
         writer = csv.writer(f)
         writer.writerow(['affiliation', 'ror_id'])
-        for offset in offsets:
-            writer.writerow(offset)
+        for result in results:
+            writer.writerow(result)
 
 
 if __name__ == "__main__":
-    query_url = 'https://api.crossref.org/works?filter=has-ror-id:t'
-    all_offsets = get_and_parse_all_offsets(query_url)
-    write_to_csv(all_offsets, 'crossref_api_has_ror.csv')
+    base_url = 'https://api.crossref.org/works'
+    params = {'filter': 'has-ror-id:t', 'rows':1000}
+    all_results = get_and_parse_all_results(base_url, params)
+    write_to_csv(all_results, 'crossref_api_has_ror.csv')
     print("Done parsing all data and writing to CSV")
 
