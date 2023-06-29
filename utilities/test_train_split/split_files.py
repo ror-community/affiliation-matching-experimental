@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 
 
 def load_csv(f):
-    with open(f, 'r') as f_in:
+    with open(f, 'r+') as f_in:
         reader = csv.reader(f_in)
         header = next(reader)
         data = list(reader)
@@ -20,7 +20,7 @@ def split_data(header, data):
 
 
 def write_csv(data, f):
-    with open(f, 'w', newline='') as f_out:
+    with open(f, 'w',) as f_out:
         writer = csv.writer(f_out)
         writer.writerows(data)
 
