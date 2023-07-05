@@ -1,10 +1,15 @@
 import csv
+import argparse
 import requests
 
-def get_api_results(base_url, params, headers):
-    response = requests.get(base_url, params=params, headers=headers) 
+
+def get_api_results(base_url, params, headers=None):
+    if headers:
+        response = requests.get(base_url, params=params, headers=headers)
+    else:
+        response = requests.get(base_url, params=params)
     if response.status_code != 200:
-        print(f"Request failed with {response.status_code} error")
+        print(f'Request failed with {response.status_code} error')
         return None
     results = response.json()
     return results['message']
@@ -27,35 +32,56 @@ def parse_api_results(items):
     return results
 
 
-def get_and_parse_all_results(base_url, params, headers, filename, rows=1000):
-    i = 0
-    with open(filename, 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(['affiliation', 'ror_id'])
-        cursor ='*'
-        while True:
-            i += 1
-            params['rows'] = rows
-            params['cursor'] = cursor
-            message = get_api_results(base_url, params, headers)
-            if message:
-                items = message.get('items', [])
-                if items:
-                    print(f'{str(len(items))}')
-                    for result in set(results):
-                        writer.writerow(result)
-                    cursor = message.get('next-cursor', None)
-                else:
-                    break
-            else:
-                break
+def get_and_parse_all_affiliation_ror_id_pairs(base_url, params, headers=None, rows=1000):
+    all_affiliation_ror_id_pairs = set()
+    cursor = '*'
+    while True:
+        params['rows'] = rows
+        params['cursor'] = cursor
+        api_results = get_api_results(base_url, params, headers)
+        if not api_results:
+            break
+        items = api_results['items']
+        if not items:
+            break
+        affiliation_ror_id_pairs = parse_api_results(items)
+        all_affiliation_ror_id_pairs.update(affiliation_ror_id_pairs)
+        cursor = api_results.get('next-cursor', None)
+        if not cursor:
+            break
+    return all_affiliation_ror_id_pairs
 
-if __name__ == "__main__":
+
+def write_to_csv(data, filename):
+    with open(filename, 'w') as f_out:
+        writer = csv.writer(f_out)
+        writer.writerow(['affiliation'])
+        for item in data:
+            writer.writerow(item)
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description='Retrieve and parse affiliation string-ROR ID pairs from the Crossref API.')
+    parser.add_argument('-t', '--token', type=str, default='',
+                        help='Crossref Metadata Plus API token')
+    parser.add_argument('-u', '--user_agent', type=str, default='',
+                        help='User Agent for the request (mailto:name@email)')
+    parser.add_argument('-f', '--output_file', type=str,
+                        default='crossref_api_has_ror.csv', help='Output CSV filename')
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = parse_arguments()
     base_url = 'https://api.crossref.org/works'
-    # Add Metadata Plus credentials or remove token from headers
-    headers = {'Crossref-Plus-API-Token': '', 'User-Agent': ''}
     params = {'filter': 'has-ror-id:t'}
-    get_and_parse_all_results(base_url, params, headers, 'crossref_api_has_ror.csv')
-    print("Done parsing all data and writing to CSV")
-
-
+    headers = {}
+    if args.token:
+        headers['Crossref-Plus-API-Token'] = args.token
+    if args.user_agent:
+        headers['User-Agent'] = args.user_agent
+    results = get_and_parse_all_affiliation_ror_id_pairs(
+        base_url, params, headers)
+    write_to_csv(results, args.output_file)
+    print('Done parsing all data and writing to CSV')
