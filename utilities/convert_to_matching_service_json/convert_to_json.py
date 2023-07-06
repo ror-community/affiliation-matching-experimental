@@ -36,8 +36,7 @@ def csv_to_json(f, prefix, task_id, outfile):
 		"items": items
 	}
 	with open(outfile, 'w', encoding='utf-8') as json_out:
-		converted_json = json.dumps(wrapper_dict, indent=4)
-		json_out.write(converted_json)
+        json.dump(wrapper_dict, json_out, indent=4)
 
 
 if __name__ == '__main__':
