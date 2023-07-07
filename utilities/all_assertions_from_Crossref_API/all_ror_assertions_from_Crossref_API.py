@@ -72,7 +72,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+def main():
     args = parse_arguments()
     base_url = 'https://api.crossref.org/works'
     params = {'filter': 'has-ror-id:t'}
@@ -85,3 +85,7 @@ if __name__ == '__main__':
         base_url, params, headers)
     write_to_csv(results, args.output_file)
     print('Done parsing all data and writing to CSV')
+
+
+if __name__ == '__main__':
+    main()
