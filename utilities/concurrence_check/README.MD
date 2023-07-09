@@ -5,7 +5,7 @@ Script for checking if ROR affiliation service and https://github.com/adambuttri
 ````
 pip install -r requirements.txt
 ````
-[Download the model files from Hugging Face](https://huggingface.co/poodledude/ror-predictor/tree/main) and place in the "models" directory.
+[Download the model files from Hugging Face](https://huggingface.co/poodledude/ror-predictor/tree/main) and place in a directory called  "models."
 
 ## usage
 Prepare a CSV file containing affiliation strings that you want to compare results from with the concurrence check. Label the affiliation string column "affiliation."
