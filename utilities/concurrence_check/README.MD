@@ -12,5 +12,5 @@ Prepare a CSV file containing affiliation strings that you want to compare resul
 
 Run the script with the required arguments:
 ````
-$ python script.py -i <input_file> [-o <output_file>] [-c <confidence_level>]
+$ python concurrence_check.py -i <input_file> [-o <output_file>] [-c <confidence_level>]
 ````
