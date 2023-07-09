@@ -11,5 +11,5 @@ Prepare a CSV file containing affiliation strings and assigned ROR IDs. Label th
 
 Run the script with the required arguments:
 ````
-$ python concurrence_check.py -i <input_file> [-o <output_file>]
+$ python ror_affiliation_test.py -i <input_file> [-o <output_file>]
 ````
