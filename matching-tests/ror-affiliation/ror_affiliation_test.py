@@ -44,7 +44,8 @@ def parse_and_query(input_file, output_file):
         reader = csv.DictReader(f_in)
         with open(output_file, 'w') as f_out:
             writer = csv.writer(f_out)
-            writer.writerow(['query_url','in_results', 'match','index', 'predicted_ror_id', 'error'])
+            writer.writerow(
+                reader.fieldnames + ['query_url', 'in_results', 'match', 'index', 'predicted_ror_id', 'error'])
         for row in reader:
             affiliation = row['affiliation']
             ror_id = row['ror_id']
@@ -59,7 +60,8 @@ def parse_and_query(input_file, output_file):
                     ror_id_chosen = "NP"
                 with open(output_file, 'a') as f_out:
                     writer = csv.writer(f_out)
-                    writer.writerow(list(row.values()) + [result['url'], result['ror_id_in_results'], ror_id_chosen, result['index'], result['chosen_id'], result['error']])
+                    writer.writerow(list(row.values()) + [result['url'], result['ror_id_in_results'],
+                                                          ror_id_chosen, result['index'], result['chosen_id'], result['error']])
 
 
 def parse_arguments():
