@@ -33,7 +33,7 @@ def parse_and_query(input_file, output_file, confidence):
     try:
         with open(output_file, 'w') as f_out:
             writer = csv.writer(f_out)
-            writer.writerow(["affiliation", "fasttext_prediction",
+            writer.writerow(["affiliation", "fasttext_prediction","fasttext_confidence"
                              'affiliation_prediction', 'concur'])
         with open(input_file, 'r+', encoding='utf-8-sig') as f_in:
             reader = csv.DictReader(f_in)
@@ -50,9 +50,9 @@ def parse_and_query(input_file, output_file, confidence):
                 with open(output_file, 'a') as f_out:
                     writer = csv.writer(f_out)
                     fasttext_prediction = fasttext_prediction if fasttext_prediction else [
-                        '']
+                        None, None]
                     writer.writerow(
-                        list(row.values()) + [fasttext_prediction[0], affiliation_prediction, concur])
+                        list(row.values()) + fasttext_prediction + [affiliation_prediction, concur])
     except Exception as e:
         logging.error(f'Error in parse_and_query: {e}')
 
