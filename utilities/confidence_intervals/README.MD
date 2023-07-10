@@ -30,4 +30,4 @@ For example:
 $ python fasttext_confidence_intervals.py -i test.csv -s 0.1 -e 0.9 -inc 0.05
 ````
 
-The script generates a CSV file named `confidence_metrics_<timestamp>.csv` with precision, recall, and F1 scores for each confidence level in the interval.
+The script generates a CSV file named `confidence_metrics_<timestamp>.csv` with precision, recall, and F1 scores for each increment of the confidence level in the interval.
