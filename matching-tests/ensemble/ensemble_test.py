@@ -9,7 +9,7 @@ from predictor import Predictor
 PREDICTOR = Predictor('models/')
 now = datetime.now()
 script_start = now.strftime("%Y%m%d_%H%M%S")
-logging.basicConfig(filename=f'{script_start}_ensemble_test.log', level=logging.ERROR)
+logging.basicConfig(filename=f'{script_start}_ensemble_test.log', level=logging.ERROR, format='%(asctime)s %(levelname)s %(message)s')
 
 
 def query_affiliation(affiliation):
