@@ -1,6 +1,7 @@
 import csv
 import sys
 import os
+import argparse
 
 def load_results_set(f):
     with open(f, 'r+', encoding='utf-8-sig') as f_in:
@@ -26,13 +27,23 @@ def write_to_csv(filename, precision, recall, f1_score):
         writer.writerow(["Precision", "Recall", "F1 Score"])
         writer.writerow([precision, recall, f1_score])
 
-if __name__ == "__main__":
-    results_set = load_results_set(sys.argv[1])
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Calculate f-score for a given CSV file.')
+    parser.add_argument('-i', '--input', help='Input CSV file', required=True)
+    parser.add_argument('-o', '--output', help='Output CSV file', default=None)
+    args = parser.parse_args()
+    if args.output is None:
+        args.output = f'{args.input}_metrics.csv'
+    return args
+
+def main():
+    args = parse_arguments()
+    results_set = load_results_set(args.input)
     true_pos, false_pos, false_neg = calculate_counts(results_set)
     precision, recall, f1_score = calculate_metrics(true_pos, false_pos, false_neg)
     print(f"Precision: {precision}\nRecall: {recall}\nF1 Score: {f1_score}")
+    write_to_csv(args.output, precision, recall, f1_score)
 
-    base_name = os.path.basename(sys.argv[1])
-    name, ext = os.path.splitext(base_name)
-    metrics_filename = f"{name}_metrics.csv"
-    write_to_csv(metrics_filename, precision, recall, f1_score)
+
+if __name__ == "__main__":
+    main()
