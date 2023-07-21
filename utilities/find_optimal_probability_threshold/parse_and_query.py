@@ -12,7 +12,7 @@ logging.basicConfig(filename=f'{script_start}_fasttext_test.log', level=logging.
 					format='%(asctime)s %(levelname)s %(message)s')
 
 
-def parse_and_query(input_file, confidence):
+def parse_and_query(input_file, min_fasttext_probability):
 	results_set = []
 	try:
 		with open(input_file, 'r+', encoding='utf-8-sig') as f_in:
@@ -20,18 +20,16 @@ def parse_and_query(input_file, confidence):
 			for row in reader:
 				affiliation = row['affiliation']
 				fasttext_prediction = PREDICTOR.predict_ror_id(
-					affiliation, confidence)
-				predicted_ror_id, prediction_confidence = fasttext_prediction[
-					0], fasttext_prediction[1]
-				if predicted_ror_id:
-					predicted_ror_id, prediction_confidence = fasttext_prediction[
-						0], fasttext_prediction[1]
+					affiliation, min_fasttext_probability)
+				if fasttext_prediction:
+					predicted_ror_id, prediction_confidence = fasttext_prediction
 					if predicted_ror_id == row['ror_id']:
 						match = 'Y'
 					else:
 						match = 'N'
 				else:
 					match = 'NP'
+					predicted_ror_id, prediction_confidence = None, None
 				row["predicted_ror_id"] = predicted_ror_id
 				row["confidence"] = prediction_confidence
 				row["match"] = match
