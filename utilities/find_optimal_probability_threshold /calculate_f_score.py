@@ -1,3 +1,5 @@
+#TODO update to account for true negatives from affiliation log data
+
 def calculate_counts(results_set):
     true_pos = sum(
         1 for row in results_set if row['match'] == 'Y' and row['predicted_ror_id'])
