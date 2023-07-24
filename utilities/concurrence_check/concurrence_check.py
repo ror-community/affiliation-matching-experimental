@@ -14,45 +14,45 @@ PREDICTOR = Predictor('models/')
 
 
 def query_affiliation(affiliation):
-    # try:
-    url = "https://api.ror.org/organizations"
-    params = {"affiliation": affiliation}
-    response = requests.get(url, params=params)
-    results = response.json()
-    for result in results["items"]:
-        if result["chosen"]:
-            return result['organization']['id'], result['score']
-    return None, None
-    # except Exception as e:
-    #     logging.error(f'Error for query: {affiliation} - {e}')
-    #     return None, None
+    try:
+        url = "https://api.ror.org/organizations"
+        params = {"affiliation": affiliation}
+        response = requests.get(url, params=params)
+        results = response.json()
+        for result in results["items"]:
+            if result["chosen"]:
+                return result['organization']['id'], result['score']
+        return None, None
+    except Exception as e:
+        logging.error(f'Error for query: {affiliation} - {e}')
+        return None, None
 
 
 def parse_and_query(input_file, output_file, min_fasttext_probability):
-    # try:
-    with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
-        reader = csv.DictReader(f_in)
-        fieldnames = reader.fieldnames + ["fasttext_prediction", "prediction_probability",
-                                          "affiliation_prediction", "affmatch_score", "concur"]
-        writer = csv.DictWriter(f_out, fieldnames=fieldnames)
-        writer.writeheader()
-        for row in reader:
-            concur = 'N'
-            affiliation = row['affiliation']
-            fasttext_prediction = PREDICTOR.predict_ror_id(affiliation, min_fasttext_probability)
-            affiliation_prediction, match_score = query_affiliation(affiliation)
-            if fasttext_prediction and fasttext_prediction[0] == affiliation_prediction:
-                concur = 'Y'
-            elif not fasttext_prediction and not affiliation_prediction:
-                concur = 'NP'
-            row.update({"fasttext_prediction": fasttext_prediction[0],
-                        "prediction_probability": fasttext_prediction[1],
-                        "affiliation_prediction": affiliation_prediction,
-                        "affmatch_score": match_score,
-                        "concur": concur})
-            writer.writerow(row)
-    # except Exception as e:
-    #     logging.error(f'Error in parse_and_query: {e}')
+    try:
+        with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
+            reader = csv.DictReader(f_in)
+            fieldnames = reader.fieldnames + ["fasttext_prediction", "prediction_probability",
+                                              "affiliation_prediction", "affmatch_score", "concur"]
+            writer = csv.DictWriter(f_out, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in reader:
+                concur = 'N'
+                affiliation = row['affiliation']
+                fasttext_prediction = PREDICTOR.predict_ror_id(affiliation, min_fasttext_probability)
+                affiliation_prediction, match_score = query_affiliation(affiliation)
+                if fasttext_prediction and fasttext_prediction[0] == affiliation_prediction:
+                    concur = 'Y'
+                elif not fasttext_prediction and not affiliation_prediction:
+                    concur = 'NP'
+                row.update({"fasttext_prediction": fasttext_prediction[0],
+                            "prediction_probability": fasttext_prediction[1],
+                            "affiliation_prediction": affiliation_prediction,
+                            "affmatch_score": match_score,
+                            "concur": concur})
+                writer.writerow(row)
+    except Exception as e:
+        logging.error(f'Error in parse_and_query: {e}')
 
 
 
