@@ -1,4 +1,3 @@
-"""
 # Ensemble Matching and Threshold Metrics
 This script performs ensemble matching using ROR affiliation and the fasttext model for a given CSV file. It iterates over a user-supplied range of thresholds, evaluates the performance for each threshold, and records the precision, recall, and F1 score in a separate CSV file.
 
@@ -34,4 +33,3 @@ $ python ffind_optimal_probability_threshold_ensemble.py --input test.csv --star
 ````
 
 By default, without specifying `-w` or `-m`, the script generates a CSV file named `threshold_metrics_<timestamp>.csv` with precision, recall, and F1 scores for each increment of the threshold in the interval.
-"""
