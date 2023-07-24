@@ -29,7 +29,7 @@ Where:
 For example:
 
 ````
-$ python ffind_optimal_probability_threshold_ensemble.py --input test.csv --start_threshold 0.1 --end_threshold 0.9 --increment 0.05 --output output.csv --write_threshold --match_order affiliation
+$ python find_optimal_probability_threshold_ensemble.py --input test.csv --start_threshold 0.1 --end_threshold 0.9 --increment 0.05 --output output.csv --write_threshold --match_order affiliation
 ````
 
 By default, without specifying `-w` or `-m`, the script generates a CSV file named `threshold_metrics_<timestamp>.csv` with precision, recall, and F1 scores for each increment of the threshold in the interval.
