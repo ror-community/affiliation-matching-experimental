@@ -6,9 +6,11 @@ from calculate_f_score import calculate_counts, calculate_metrics
 
 
 def parse_arguments():
+    metrics_filename = f"threshold_metrics_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     parser = argparse.ArgumentParser(
         description='Optimize prediction threshold for fasttext affiliation matches and calculate metrics.')
     parser.add_argument('-i', '--input', help='Input CSV file', required=True)
+    parser.add_argument('-o', '--output', help='Output CSV file for the metrics', default=metrics_filename)
     parser.add_argument('-s', '--start_threshold', type=float,
                         help='Start fasttext probability threshold (e.g., "0.1")', required=True)
     parser.add_argument('-e', '--end_threshold', type=float,
@@ -41,7 +43,7 @@ def main():
         precision, recall, f1_score = calculate_metrics(
             true_pos, false_pos, false_neg)
         results[threshold] = [precision, recall, f1_score]
-    metrics_filename = f"fasttext_threshold_metrics_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    metrics_filename = args.output
     write_to_csv(metrics_filename, results)
 
 
