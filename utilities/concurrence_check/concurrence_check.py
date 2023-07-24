@@ -32,23 +32,23 @@ def parse_and_query(input_file, output_file, min_fasttext_probability):
     try:
         with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
             reader = csv.DictReader(f_in)
-            fieldnames = reader.fieldnames + ["fasttext_prediction", "prediction_probability",
-                                              "affiliation_prediction", "affmatch_score", "concur"]
+            fieldnames = reader.fieldnames + ["fasttext_prediction", "fasttext_probability",
+                                              "ror_aff_prediction", "ror_aff_score", "concur"]
             writer = csv.DictWriter(f_out, fieldnames=fieldnames)
             writer.writeheader()
             for row in reader:
                 concur = 'N'
                 affiliation = row['affiliation']
                 fasttext_prediction = PREDICTOR.predict_ror_id(affiliation, min_fasttext_probability)
-                affiliation_prediction, match_score = query_affiliation(affiliation)
-                if fasttext_prediction and fasttext_prediction[0] == affiliation_prediction:
+                ror_aff_prediction, match_score = query_affiliation(affiliation)
+                if fasttext_prediction and fasttext_prediction[0] == ror_aff_prediction:
                     concur = 'Y'
-                elif not fasttext_prediction and not affiliation_prediction:
+                elif not fasttext_prediction and not ror_aff_prediction:
                     concur = 'NP'
                 row.update({"fasttext_prediction": fasttext_prediction[0],
-                            "prediction_probability": fasttext_prediction[1],
-                            "affiliation_prediction": affiliation_prediction,
-                            "affmatch_score": match_score,
+                            "fasttext_probability": fasttext_prediction[1],
+                            "ror_aff_prediction": ror_aff_prediction,
+                            "ror_aff_score": match_score,
                             "concur": concur})
                 writer.writerow(row)
     except Exception as e:
