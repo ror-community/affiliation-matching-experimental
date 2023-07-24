@@ -43,18 +43,17 @@ def query_affiliation(affiliation):
 
 def parse_and_query(input_file, output_file, min_fasttext_probability):
     try:
-        with open(input_file, 'r+', encoding='utf-8-sig') as f_in:
+        with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w', newline='') as f_out:
             reader = csv.DictReader(f_in)
-            with open(output_file, 'w') as f_out:
-                writer = csv.writer(f_out)
-                writer.writerow(reader.fieldnames + ['fasttext_prediction', 'prediction_probability', 'affiliation_prediction',
-                                                     'concur', 'affiliation_top_results', 'fasttext_in_affiliation_top_results', 'chosen_score', 'top_scores'])
+            fieldnames = reader.fieldnames + ['fasttext_prediction', 'prediction_probability', 'affiliation_prediction',
+                                              'concur', 'affiliation_top_results', 'fasttext_in_affiliation_top_results', 'chosen_score', 'top_scores']
+            writer = csv.DictWriter(f_out, fieldnames=fieldnames)
+            writer.writeheader()
             for row in reader:
                 concur = 'N'
                 in_top_results = 'N'
                 affiliation = row['affiliation']
-                fasttext_prediction = PREDICTOR.predict_ror_id(
-                    affiliation, min_fasttext_probability)
+                fasttext_prediction = PREDICTOR.predict_ror_id(affiliation, min_fasttext_probability)
                 affiliation_prediction = query_affiliation(affiliation)
                 if fasttext_prediction and fasttext_prediction[0] == affiliation_prediction['chosen_id']:
                     concur = 'Y'
@@ -62,12 +61,18 @@ def parse_and_query(input_file, output_file, min_fasttext_probability):
                     concur = 'NP'
                 if fasttext_prediction and affiliation_prediction['top_results'] and fasttext_prediction[0] in affiliation_prediction['top_results'].split('; '):
                     in_top_results = 'Y'
-                with open(output_file, 'a') as f_out:
-                    writer = csv.writer(f_out)
-                    fasttext_prediction = fasttext_prediction if fasttext_prediction else [
-                        None, None]
-                    writer.writerow(
-                        list(row.values()) + fasttext_prediction + [affiliation_prediction['chosen_id'], concur, affiliation_prediction['top_results'], in_top_results, affiliation_prediction['chosen_score'], '; '.join(map(str, affiliation_prediction['top_scores']))])
+                row.update({
+                    'fasttext_prediction': fasttext_prediction[0],
+                    'prediction_probability': fasttext_prediction[1],
+                    'affiliation_prediction': affiliation_prediction['chosen_id'],
+                    'concur': concur,
+                    'affiliation_top_results': affiliation_prediction['top_results'],
+                    'fasttext_in_affiliation_top_results': in_top_results,
+                    'chosen_score': affiliation_prediction['chosen_score'],
+                    'top_scores': '; '.join(map(str, affiliation_prediction['top_scores']))
+                })
+                writer.writerow(row)
+
     except Exception as e:
         logging.error(f'Error in parse_and_query: {e}')
 
