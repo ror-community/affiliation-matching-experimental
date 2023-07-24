@@ -16,7 +16,7 @@ PREDICTOR = Predictor('models/')
 def query_affiliation(affiliation):
     try:
         match_dict = {'chosen': False, 'chosen_id': None,
-                      'top_results': None, 'chosen_score': None, 'top_scores': []}
+                      'top_results': None, 'ror_aff_score': None, 'ror_aff_top_5_scores': []}
         url = "https://api.ror.org/organizations"
         params = {"affiliation": affiliation}
         response = requests.get(url, params=params)
@@ -29,11 +29,11 @@ def query_affiliation(affiliation):
             for i, result in enumerate(results['items']):
                 if i < 5:
                     top_results.append(result['organization']['id'])
-                    match_dict['top_scores'].append(result['score'])
+                    match_dict['ror_aff_top_5_scores'].append(result['score'])
                 if result['chosen']:
                     match_dict['chosen'] = True
                     match_dict['chosen_id'] = result['organization']['id']
-                    match_dict['chosen_score'] = result['score']
+                    match_dict['ror_aff_score'] = result['score']
             match_dict['top_results'] = '; '.join(top_results)
             return match_dict
     except Exception as e:
@@ -45,8 +45,8 @@ def parse_and_query(input_file, output_file, min_fasttext_probability):
     try:
         with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w', newline='') as f_out:
             reader = csv.DictReader(f_in)
-            fieldnames = reader.fieldnames + ['fasttext_prediction', 'prediction_probability', 'affiliation_prediction',
-                                              'concur', 'affiliation_top_results', 'fasttext_in_affiliation_top_results', 'chosen_score', 'top_scores']
+            fieldnames = reader.fieldnames + ['fasttext_prediction', 'fasttext_probability', 'ror_aff_prediction','ror_aff_score', 
+                                              'ror_aff_top_5_scores','ror_aff_top_5_scores', 'concur', 'fasttext_in_ror_aff_top_5', ]
             writer = csv.DictWriter(f_out, fieldnames=fieldnames)
             writer.writeheader()
             for row in reader:
@@ -54,22 +54,22 @@ def parse_and_query(input_file, output_file, min_fasttext_probability):
                 in_top_results = 'N'
                 affiliation = row['affiliation']
                 fasttext_prediction = PREDICTOR.predict_ror_id(affiliation, min_fasttext_probability)
-                affiliation_prediction = query_affiliation(affiliation)
-                if fasttext_prediction and fasttext_prediction[0] == affiliation_prediction['chosen_id']:
+                ror_aff_prediction = query_affiliation(affiliation)
+                if fasttext_prediction and fasttext_prediction[0] == ror_aff_prediction['chosen_id']:
                     concur = 'Y'
-                elif not fasttext_prediction and not affiliation_prediction['chosen_id']:
+                elif not fasttext_prediction and not ror_aff_prediction['chosen_id']:
                     concur = 'NP'
-                if fasttext_prediction and affiliation_prediction['top_results'] and fasttext_prediction[0] in affiliation_prediction['top_results'].split('; '):
+                if fasttext_prediction and ror_aff_prediction['top_results'] and fasttext_prediction[0] in ror_aff_prediction['top_results'].split('; '):
                     in_top_results = 'Y'
                 row.update({
                     'fasttext_prediction': fasttext_prediction[0],
-                    'prediction_probability': fasttext_prediction[1],
-                    'affiliation_prediction': affiliation_prediction['chosen_id'],
+                    'fasttext_probability': fasttext_prediction[1],
+                    'ror_aff_prediction': ror_aff_prediction['chosen_id'],
                     'concur': concur,
-                    'affiliation_top_results': affiliation_prediction['top_results'],
-                    'fasttext_in_affiliation_top_results': in_top_results,
-                    'chosen_score': affiliation_prediction['chosen_score'],
-                    'top_scores': '; '.join(map(str, affiliation_prediction['top_scores']))
+                    'ror_aff_top_5_scores': ror_aff_prediction['ror_aff_top_5_scores'],
+                    'fasttext_in_ror_aff_top_5': in_top_results,
+                    'ror_aff_score': ror_aff_prediction['ror_aff_score'],
+                    'ror_aff_top_5_scores': '; '.join(map(str, ror_aff_prediction['ror_aff_top_5_scores']))
                 })
                 writer.writerow(row)
 
