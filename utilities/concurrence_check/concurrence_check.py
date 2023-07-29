@@ -39,14 +39,14 @@ def parse_and_query(input_file, output_file, min_fasttext_probability):
             for row in reader:
                 concur = 'N'
                 affiliation = row['affiliation']
-                fasttext_prediction = PREDICTOR.predict_ror_id(affiliation, min_fasttext_probability)
+                fasttext_ror_id, fasttext_probability = PREDICTOR.predict_ror_id(affiliation, min_fasttext_probability)
                 ror_aff_prediction, match_score = query_affiliation(affiliation)
-                if fasttext_prediction and fasttext_prediction[0] == ror_aff_prediction:
-                    concur = 'Y'
-                elif not fasttext_prediction and not ror_aff_prediction:
+                if not fasttext_ror_id and not ror_aff_prediction:
                     concur = 'NP'
-                row.update({"fasttext_prediction": fasttext_prediction[0],
-                            "fasttext_probability": fasttext_prediction[1],
+                elif fasttext_ror_id == ror_aff_prediction:
+                    concur = 'Y'
+                row.update({"fasttext_prediction": fasttext_ror_id,
+                            "fasttext_probability": fasttext_probability,
                             "ror_aff_prediction": ror_aff_prediction,
                             "ror_aff_score": match_score,
                             "concur": concur})
