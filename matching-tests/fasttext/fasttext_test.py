@@ -16,29 +16,25 @@ def parse_and_query(input_file, output_file, confidence):
     try:
         with open(input_file, 'r+', encoding='utf-8-sig') as f_in:
             reader = csv.DictReader(f_in)
+            fieldnames = reader.fieldnames + ["fasttext_prediction", "fasttext_probability", "match"]
             with open(output_file, 'w') as f_out:
-                writer = csv.writer(f_out)
-                writer.writerow(
-                    reader.fieldnames + ["fasttext_prediction", "confidence", "match"])
-            for row in reader:
-                affiliation = row['affiliation']
-                fasttext_prediction = PREDICTOR.predict_ror_id(
-                    affiliation, confidence)
-                predicted_ror_id, prediction_confidence = fasttext_prediction[
-                    0], fasttext_prediction[1]
-                if predicted_ror_id:
-                    predicted_ror_id, prediction_confidence = fasttext_prediction[
-                        0], fasttext_prediction[1]
-                    if predicted_ror_id == row['ror_id']:
-                        match = 'Y'
+                writer = csv.DictWriter(f_out, fieldnames=fieldnames)
+                writer.writeheader()
+                for row in reader:
+                    affiliation = row['affiliation']
+                    fasttext_prediction = PREDICTOR.predict_ror_id(
+                        affiliation, confidence)
+                    predicted_ror_id, prediction_probability = fasttext_prediction
+                    if predicted_ror_id:
+                        match = 'Y' if predicted_ror_id == row['ror_id'] else 'N'
                     else:
-                        match = 'N'
-                else:
-                    match = 'NP'
-                with open(output_file, 'a') as f_out:
-                    writer = csv.writer(f_out)
-                    writer.writerow(
-                        list(row.values()) + [predicted_ror_id, prediction_confidence, match])
+                        match = 'NP'
+                    row.update({
+                        "fasttext_prediction": predicted_ror_id,
+                        "fasttext_probability": prediction_probability,
+                        "match": match
+                    })
+                    writer.writerow(row)
     except Exception as e:
         logging.error(f'Error in parse_and_query: {e}')
 
