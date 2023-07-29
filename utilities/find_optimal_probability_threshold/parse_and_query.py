@@ -19,15 +19,14 @@ def parse_and_query(input_file, min_fasttext_probability):
             reader = csv.DictReader(f_in)
             for row in reader:
                 affiliation = row['affiliation']
-                fasttext_prediction = PREDICTOR.predict_ror_id(affiliation, min_fasttext_probability)
-                if fasttext_prediction:
-                    predicted_ror_id, prediction_confidence = fasttext_prediction
+                predicted_ror_id, prediction_probability = PREDICTOR.predict_ror_id(affiliation, min_fasttext_probability)
+                if predicted_ror_id:
                     match = 'Y' if predicted_ror_id == row['ror_id'] else 'N'
                 else:
-                    match, predicted_ror_id, prediction_confidence = 'NP', None, None
+                    match = 'NP'
                 row.update({
                     "predicted_ror_id": predicted_ror_id,
-                    "confidence": prediction_confidence,
+                    "prediction_probability": prediction_probability,
                     "match": match
                 })
                 results_set.append(row)
