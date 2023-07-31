@@ -2,18 +2,17 @@ import re
 import csv
 import argparse
 from random import sample
-from urllib.parse import unquote
+from urllib.parse import unquote_plus
 from collections import defaultdict
 
 
 def convert_url_to_affiliation(affiliation_url):
     affiliation = re.search(r'affiliation=(.*?)$', affiliation_url)
     if affiliation:
-        affiliation = unquote(affiliation.group(1).replace('+', ' '))
+        affiliation = unquote_plus(affiliation.group(1))
         # filtering invalid request inputs that distort sampling
-        if affiliation:
-            if '*' not in affiliation and 'rororg' not in affiliation:
-                return affiliation
+        if affiliation and '*' not in affiliation and 'rororg' not in affiliation:
+            return affiliation
     return None
 
 
@@ -34,7 +33,7 @@ def sample_log_file(log_file):
         else:
             samples = sample(values, 15)
             affiliations.update(samples)
-    return list(affiliations)
+    return affiliations
 
 
 def write_to_csv(data, filename):
@@ -51,7 +50,7 @@ def parse_arguments():
     parser.add_argument(
         "-i", "--input", help="Input log file path.", required=True)
     parser.add_argument(
-        "-o", "--output", help="Output file path.", required=True)
+        "-o", "--output", help="Output file path.", default="sample.csv")
     return parser.parse_args()
 
 
