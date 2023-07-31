@@ -64,4 +64,4 @@ The output file is a CSV file with the same format as the input file, but withou
 
 ```bash
 python script_name.py indexed_affiliations.csv filtered_affiliations.csv -l 6
-``
+```
