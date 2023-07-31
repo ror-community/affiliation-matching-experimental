@@ -1,6 +1,6 @@
 # NER Indexes
 
-This Python script finds the start and stop indices of organization names within affiliation strings by comparing them to Research Organization Registry (ROR) records. The organization names are extracted from the ROR data dump file and are used to search through a provided list of affiliations. The script outputs a CSV file that contains each affiliation string, its associated ROR ID, and the start and stop indices of the organization name within the string. Input assumes the same format as the [fasttext model training data](https://huggingface.co/datasets/poodledude/ror-predictor/tree/main), but can easily be tweaked to your needs.
+This Python script finds the start and stop indices of organization names within affiliation strings by comparing them to ROR records from the [ROR data dump](https://zenodo.org/record/8190709). The organization names are extracted from the ROR data dump file and are used to search through a provided list of affiliations. The script outputs a CSV file that contains each affiliation string, its associated ROR ID, and the start and stop indices of the organization name within the string. Input assumes the same format as the [fasttext model training data](https://huggingface.co/datasets/poodledude/ror-predictor/tree/main), but can easily be tweaked to your needs.
 
 ## Installation
 
