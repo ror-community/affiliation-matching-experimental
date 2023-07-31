@@ -16,9 +16,9 @@ python script_name.py -d data_dump_file -i input_file -o output_file
 
 Arguments:
 
-* `-d` or `--data_dump_file`: This is the path to the ROR data dump file. This argument is required.
-* `-i` or `--input`: This is the path to the input file that contains validated affiliation string-ROR ID pairs. This argument is required.
-* `-o` or `--output`: This is the path to the output file where the script will write the results. If this argument is not provided, the script will use 'valid_indexes.csv' as the default output file name.
+* `-d` or `--data_dump_file`: Path to the ROR data dump file. This argument is required.
+* `-i` or `--input`: Path to the input file that contains validated affiliation string-ROR ID pairs. This argument is required.
+* `-o` or `--output`: Path to the output file where the script will write the results. valid_indexes.csv' is the default output file name.
 
 ## Output
 
@@ -52,9 +52,9 @@ python deduplicate_and_remove_short.py input_file output_file -l min_length
 
 Here is what each argument stands for:
 
-* `input_file`: This is the path to the input CSV file, which is the output of the ROR Name Indexer. This argument is required.
-* `output_file`: This is the path to the output file where the script will write the filtered results. This argument is required.
-* `-l` or `--length`: This is the minimum length of the substring to keep. If this argument is not provided, the script will use 5 as the default minimum length.
+* `input_file`: Path to the input CSV file, which is the output of the ROR Name Indexer. This argument is required.
+* `output_file`: Path to the output file where the script will write the filtered results. This argument is required.
+* `-l` or `--length`: Minimum length of the substring to keep. If not provided, the script will use 5 as the default minimum length.
 
 ## Output
 
