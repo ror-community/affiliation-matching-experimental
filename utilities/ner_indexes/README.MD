@@ -17,7 +17,7 @@ python script_name.py -d data_dump_file -i input_file -o output_file
 Arguments:
 
 * `-d` or `--data_dump_file`: This is the path to the ROR data dump file. This argument is required.
-* `-i` or `--input`: This is the path to the input file that contains validated OpenAlex affiliation string-ROR ID pairs in fasttext training format. This argument is required.
+* `-i` or `--input`: This is the path to the input file that contains validated affiliation string-ROR ID pairs. This argument is required.
 * `-o` or `--output`: This is the path to the output file where the script will write the results. If this argument is not provided, the script will use 'valid_indexes.csv' as the default output file name.
 
 ## Output
