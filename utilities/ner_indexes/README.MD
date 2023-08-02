@@ -34,7 +34,7 @@ The output file is a CSV file with the following fields:
 ## Example
 
 ```bash
-python script_name.py -d ror_data_dump.json -i affiliations.txt -o indexed_affiliations.csv
+python ner_indexes.py -d ror_data_dump.json -i affiliations.txt -o indexed_affiliations.csv
 ```
 
 
