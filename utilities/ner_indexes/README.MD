@@ -11,7 +11,7 @@ pip install -r requirements.txt
 ## Usage
 
 ```bash
-python script_name.py -d data_dump_file -i input_file -o output_file
+python ner_indexes.py -d data_dump_file -i input_file -o output_file
 ```
 
 Arguments:
