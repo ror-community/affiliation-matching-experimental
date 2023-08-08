@@ -18,9 +18,8 @@ def preprocess_primary_name(name):
 # Used to skip labels that have non-Latin characters
 def check_latin_chars(s):
     for ch in s:
-        if ch.isalpha():
-            if 'LATIN' not in unicodedata.name(ch):
-                return False
+        if ch.isalpha() and 'LATIN' not in unicodedata.name(ch):
+            return False
     return True
 
 
@@ -30,7 +29,6 @@ def preprocess_text(text):
 
 
 def get_all_names(record):
-    ror_id = record['id']
     primary_name = preprocess_primary_name(record['name'])
     aliases = record['aliases']
     labels = [label['label'] for label in record.get('labels', [])]
