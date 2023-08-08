@@ -80,7 +80,7 @@ def parse_arguments():
     parser.add_argument('-o', '--output', help='Output CSV file',
                         default='ensemble_results.csv')
     parser.add_argument(
-        '-c', '--min_fasttext_probability', help='min_fasttext_probability level for the fasttext predictor', type=float, default=0.8)
+        '-p', '--min_fasttext_probability', help='min_fasttext_probability level for the fasttext predictor', type=float, default=0.8)
     parser.add_argument('-m', '--match_order',
                         help='Order of matching methods ("fasttext" or "affiliation")', type=str, default='fasttext')
     return parser.parse_args()
