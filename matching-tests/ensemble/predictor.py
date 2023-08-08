@@ -25,6 +25,6 @@ class Predictor():
 		label, ratio = predicted_label[0][0], predicted_label[1][0]
 		if ratio >= confidence:
 			label = re.sub('__label__','', label)
-			return [label, ratio]
+			return label, ratio
 		else:
 			return None, None
