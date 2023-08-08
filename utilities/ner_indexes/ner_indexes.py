@@ -10,6 +10,8 @@ from unidecode import unidecode
 from gensim.parsing.preprocessing import preprocess_string, strip_tags, strip_multiple_whitespaces, strip_punctuation
 
 
+# Used to remove (Country Name) from the primary name field, as is included on
+# some records to distinguish national-level branches of various organizations
 def preprocess_primary_name(name):
     name = re.sub(r'\s\(.*\)', '', name)
     return name
@@ -48,7 +50,7 @@ def create_names_dict(data_dump_file):
 
 
 def find_start_stop_index(substring, string):
-    substring_list = preprocess_text(substring).split()
+    substring_list = substring.split()
     string_list = preprocess_text(string).split()
     word_to_indices_dict = {}
     current_index = 0
@@ -70,8 +72,7 @@ def find_start_stop_index(substring, string):
         for _, stop_char_index in last_word_indices:
             if stop_char_index >= start_char_index:  # Ensuring we are not looking backwards
                 possible_substring = string[start_char_index:stop_char_index]
-                possible_substring_list = preprocess_text(
-                    possible_substring).split()
+                possible_substring_list = possible_substring.split()
                 if all(word in possible_substring_list for word in substring_list):
                     # If the possible substring contains all words in the substring_list
                     if shortest_substring_info is None or (stop_char_index - start_char_index) < (shortest_substring_info[1] - shortest_substring_info[0]):
@@ -83,11 +84,10 @@ def find_start_stop_index(substring, string):
 
 def get_indexes(data_dump_file, labeled_affiliations_file, output_file):
     names_dict = create_names_dict(data_dump_file)
-    with open(output_file, 'w') as f_out:
+    with open(labeled_affiliations_file, 'r+') as f_in, open(output_file, 'w') as f_out:
+        reader = csv.DictReader(f_in, delimiter=' ')
         writer = csv.writer(f_out)
         writer.writerow(['ror_id', 'affiliation_string', 'start_index', 'stop_index', 'index_substring'])
-    with open(labeled_affiliations_file, 'r+') as f_in:
-        reader = csv.DictReader(f_in, delimiter=' ')
         for row in reader:
             ror_id = re.sub('__label__', '', row['label'])
             affiliation_string = row['affiliation_string']
@@ -96,9 +96,7 @@ def get_indexes(data_dump_file, labeled_affiliations_file, output_file):
                 for name in all_names:
                     start_stop = find_start_stop_index(name, affiliation_string)
                     if start_stop is not None:
-                        with open(output_file, 'a') as f_out:
-                            writer = csv.writer(f_out)
-                            writer.writerow(list(row.values()) + start_stop)
+                        writer.writerow(list(row.values()) + start_stop)
             except KeyError:
                 print('Invalid ROR ID:', ror_id)
 
