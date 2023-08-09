@@ -28,8 +28,8 @@ def write_csv(data, f):
 def read_split_write(test_data_file, test_size, random_seed):
     header, data = load_csv(test_data_file)
     data_train, data_test = split_data(header, data, test_size, random_seed)
-    write_csv(data_train, test_data_file.replace('.csv', '_train.csv'))
-    write_csv(data_test, test_data_file.replace('.csv', '_test.csv'))
+    write_csv(data_train, test_data_file.replace('.csv', '_test.csv'))
+    write_csv(data_test, test_data_file.replace('.csv', '_valid.csv'))
 
 
 def parse_arguments():
