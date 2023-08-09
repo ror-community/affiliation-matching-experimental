@@ -8,8 +8,8 @@ This script is for testing fine-tuned BERT models trained on data from ner_index
 
 Two versions of the fine-tuned models can be downloaded from the following links:
 
-1. [500K-5-epoch Model](https://huggingface.co/poodledude/ner-test-bert-base-uncased-finetuned-500K-5-epoch/tree/main)
-2. [500K-AdamW-1-epoch Model](https://huggingface.co/poodledude/ner-test-bert-base-uncased-finetuned-500K-AdamW-1-epoch/tree/main)
+1. [500K-5-epoch model](https://huggingface.co/poodledude/ner-test-bert-base-uncased-finetuned-500K-5-epoch/tree/main)
+2. [500K-AdamW-1-epoch model](https://huggingface.co/poodledude/ner-test-bert-base-uncased-finetuned-500K-AdamW-1-epoch/tree/main)
 
 
 ## Dependencies
