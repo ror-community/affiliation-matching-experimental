@@ -19,12 +19,12 @@ class Predictor():
 						  strip_punctuation, strip_multiple_whitespaces]
 		return unidecode(' '.join(preprocess_string(text, custom_filters)))
 
-	def predict_ror_id(self, affiliation, threshold):
+	def predict_ror_id(self, affiliation, confidence):
 		affiliation = self.preprocess_text(affiliation)
 		predicted_label = self.classifier.predict(affiliation, k=1)
 		label, ratio = predicted_label[0][0], predicted_label[1][0]
-		if ratio >= threshold:
+		if ratio >= confidence:
 			label = re.sub('__label__','', label)
-			return label, ratio
+			return [(label, ratio)]
 		else:
-			return None, None
+			return None
