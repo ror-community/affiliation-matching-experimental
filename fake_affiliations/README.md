@@ -9,9 +9,9 @@ pip install -r requirements.txt
 
 
 ## Usage:
-
+````
 python <fake_affiliations>.py -i <ROR_data_dump_file> -o <output_csv_file>
-
+````
 
 ## Output:
 
