@@ -27,4 +27,4 @@ class Predictor():
 			label = re.sub('__label__','', label)
 			return label, ratio
 		else:
-			return None
+			return None, None
