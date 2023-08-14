@@ -21,23 +21,16 @@ def openalex_prediction(affiliation_string):
 
 def parse_and_query(input_file, output_file):
     try:
-        with open(input_file, 'r+', encoding='utf-8-sig') as f_in:
+        with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
             reader = csv.DictReader(f_in)
-            with open(output_file, 'w') as f_out:
-                writer = csv.writer(f_out)
-                writer.writerow(
-                    reader.fieldnames + ["openalex_prediction", "match"])
+            writer = csv.writer(f_out)
+            writer.writerow(
+                reader.fieldnames + ["openalex_prediction", "match"])
             for row in reader:
                 affiliation = row['affiliation']
                 predicted_ror_id = openalex_prediction(
                     affiliation)
-                if predicted_ror_id:
-                    if predicted_ror_id == row['ror_id']:
-                        match = 'Y'
-                    else:
-                        match = 'N'
-                else:
-                    match = 'NP'
+                match = 'Y' if predicted_ror_id and predicted_ror_id == row['ror_id'] else ('NP' if not predicted_ror_id else 'N')
                 with open(output_file, 'a') as f_out:
                     writer = csv.writer(f_out)
                     writer.writerow(
