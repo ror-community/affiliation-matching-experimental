@@ -50,7 +50,7 @@ def get_record_value(record, key, process_func=None):
 
 
 def get_record_name(record, key):
-    return get_record_value(record, key, lambda x: x.get('label'))
+    return get_record_value(record, key, process_func=lambda x: x.get('label'))
 
 
 def get_all_names(record):
@@ -75,7 +75,7 @@ def get_all_names(record):
         if single_parent_name:
             all_names += [' '.join([name, single_parent_name])
                           for name in all_names]
-    return [all_names, minus_acronyms]
+    return all_names, minus_acronyms
 
 
 def get_address_parts(record):
@@ -88,10 +88,10 @@ def get_address_parts(record):
         if admin1_name == admin2_name:
             admin2_name = None
         country_name = record.get('country', {}).get('country_name')
-        return [city_name, admin1_name, admin2_name, country_name]
+        return city_name, admin1_name, admin2_name, country_name
     except Exception as e:
         print(f"Error in getting address parts: {str(e)}")
-        return [None, None, None, None]
+        return None, None, None, None
 
 
 def fake_affiliations(record):
@@ -131,7 +131,7 @@ def data_dump_to_fake_affiliation_strings(data_dump_file, output_file):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description='Check with affiliation matching services concur for affiliation strings given CSV file.')
+        description='Generate fake affiliation training data from the ROR data dump file.')
     parser.add_argument(
         '-i', '--input', help='ROR data dump file', required=True)
     parser.add_argument(
