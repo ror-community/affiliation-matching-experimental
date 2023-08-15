@@ -38,30 +38,36 @@ python ner_indexes.py -d ror_data_dump.json -i affiliations.txt -o indexed_affil
 ```
 
 
-# Deduplicate and remove short
+# Deduplicate and Remove Outliers
 
-Additionally, there is an optional script to filter out duplicate rows and short substrings from a CSV file created by the NER Indexes script. It uses the SHA-1 hash of each row to identify duplicates. The script also ignores any rows where the length of the substring is less than the length argument.
+This script filters a CSV file produced by the NER Indexes script. It achieves this by:
 
+- Removing duplicate rows based on the SHA-1 hash of each row.
+- Filtering name rows based on the minimum length of the `index_substring` value.
+- Identifying outliers based on the statistical distribution of substring lengths for given entity types.
+
+The script also logs distribution data and the calculated thresholds for outlier detection.
 
 ## Usage
 
-
 ```bash
-python deduplicate_and_remove_short.py input_file output_file -l min_length
+python deduplicate_and_prune.py -i input_file -o output_file -e excluded_file -l min_length
 ```
 
-Here is what each argument stands for:
+Here's a breakdown of the script arguments:
 
-* `input_file`: Path to the input CSV file, which is the output of the ROR Name Indexer. This argument is required.
-* `output_file`: Path to the output file where the script will write the filtered results. This argument is required.
-* `-l` or `--length`: Minimum length of the substring to keep. If not provided, the script will use 5 as the default minimum length.
+* `-i` or `--input`: Path to the input CSV file. This argument is required.
+* `-o` or `--output`: Path to the output file where the script will write the filtered results. This argument is required.
+* `-e` or `--excluded`: Path to the output file where the script will write rows identified as outliers. The default value is `excluded.csv`.
+* `-l` or `--length`: Minimum length of the `index_substring` to keep. If not provided, the script will use 5 as the default minimum length.
 
 ## Output
 
-The output file is a CSV file with the same format as the input file, but without duplicate rows or rows with an substring length shorter than the specified minimum length.
+- **Filtered File**: A CSV file with the same format as the input file but pruned to keep rows that match the conditions.
+- **Excluded File**: A CSV file with rows that are considered outliers based on the calculated thresholds for different entity types.
 
 ## Example
 
 ```bash
-python deduplicate_and_remove_short.py indexed_affiliations.csv filtered_affiliations.csv -l 6
+python deduplicate_and_prune.py -i indexed_affiliations.csv -o filtered_affiliations.csv -e excluded_outliers.csv -l 6
 ```
