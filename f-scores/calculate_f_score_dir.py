@@ -31,9 +31,9 @@ def main():
     for file in glob.glob(f'{args.input}/*.csv'):
         results_set = load_results_set(file)
         true_pos, false_pos, false_neg = calculate_counts(results_set)
-        precision, recall, f1_score = calculate_metrics(
+        precision, recall, f1_score, f05_score = calculate_metrics(
             true_pos, false_pos, false_neg)
-        output_data.append([file, precision, recall, f1_score])
+        output_data.append([file, precision, recall, f1_score, f05_score])
     write_to_csv(output_data, args.output)
 
 
