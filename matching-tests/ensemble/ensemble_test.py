@@ -56,7 +56,7 @@ def parse_and_query(input_file, output_file, min_fasttext_probability, match_ord
 		with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
 			reader = csv.DictReader(f_in)
 			fieldnames = reader.fieldnames + \
-				["prediction", "probability", "match"]
+				["predicted_ror_id", "probability", "match"]
 			writer = csv.DictWriter(f_out, fieldnames=fieldnames)
 			writer.writeheader()
 			for row in reader:

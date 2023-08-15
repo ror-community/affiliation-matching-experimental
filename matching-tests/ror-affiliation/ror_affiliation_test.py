@@ -33,7 +33,7 @@ def parse_and_query(input_file, output_file):
 	try:
 		with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
 			reader = csv.DictReader(f_in)
-			fieldnames = reader.fieldnames + ["prediction", "score", "match"]
+			fieldnames = reader.fieldnames + ["predicted_ror_id", "score", "match"]
 			writer = csv.DictWriter(f_out, fieldnames=fieldnames)
 			writer.writeheader()
 			for row in reader:
