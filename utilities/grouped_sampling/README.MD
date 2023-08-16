@@ -19,5 +19,5 @@ $ python grouped_sampling.py -i <input_file> -o <output_file.csv>  -n <number_of
 
 ## Example
 ```bash
-$ python csv_sampler.py -i data.csv -o sampled_data.csv -n 5
+$ python grouped_sampling.py -i data.csv -o sampled_data.csv -n 5
 ```
