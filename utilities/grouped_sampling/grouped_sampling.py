@@ -19,7 +19,7 @@ def sample_rows(input_file, output_file, n_hashes):
             hash_to_rows[hash_val].append(row)
 
     sampled_hashes = list(islice(hash_to_rows.keys(), n_hashes))
-    with open(output_file, 'w', newline='') as file:
+    with open(output_file, 'w') as file:
         fieldnames = ["ror_id", "affiliation_string", "entity_type",
                       "start_index", "stop_index", "index_substring"]
         writer = csv.DictWriter(file, fieldnames=fieldnames)
