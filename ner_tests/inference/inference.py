@@ -35,7 +35,7 @@ def conduct_inference(model, inputs):
 
 
 def postprocess_output(tokenizer, ids, flattened_predictions, inputs):
-    ids_to_labels = {0: "O", 1: "B-ORG", 2: "I-ORG", 3: "O"}
+    ids_to_labels = {0: "B-ORG", 1: "I-ORG", 2: "O", 3: "B-LOC", 4: "I-LOC"}
     tokens = tokenizer.convert_ids_to_tokens(ids.squeeze().tolist())
     token_predictions = [ids_to_labels[i]
                          for i in flattened_predictions.cpu().numpy()]
@@ -46,6 +46,10 @@ def postprocess_output(tokenizer, ids, flattened_predictions, inputs):
             prediction.append(token_pred[1])
         else:
             continue
+    invalid_tag_combinations = all(tag in [
+                                   "I-ORG", "B-LOC", "I-LOC", "O"] for tag in prediction) and "B-ORG" not in prediction
+    if invalid_tag_combinations:
+        return None
     return prediction
 
 
@@ -54,7 +58,7 @@ def construct_string(affiliation, prediction):
     words = [split_affiliation[i]
              for i in range(len(prediction)) if prediction[i] != "O"]
     joined_prediction = " ".join(words).strip()
-    joined_prediction = re.sub(',','', joined_prediction)
+    joined_prediction = re.sub(',', '', joined_prediction)
     return joined_prediction
 
 
@@ -63,8 +67,8 @@ def parse_arguments():
         description="Parse CSV, infer using model, and write results to a new CSV.")
     parser.add_argument("-i", "--input", required=True,
                         help="Path to input CSV file")
-    parser.add_argument("-o", "--output", default="inference_results.csv",
-                        help="Path to output CSV file")
+    parser.add_argument(
+        "-o", "--output", default="inference_results.csv", help="Path to output CSV file")
     parser.add_argument("-m", "--model_path", required=True,
                         help="Path to model directory")
     return parser.parse_args()
@@ -74,10 +78,10 @@ def main():
     args = parse_arguments()
     model = load_model(args.model_path)
     tokenizer = BertTokenizerFast.from_pretrained("bert-base-uncased")
-    with open(args.input, "r+", encoding="utf-8-sig") as infile, open(args.output, "w", newline="") as outfile:
-        reader = csv.DictReader(infile)
-        fieldnames = reader.fieldnames + ["prediction"]
-        writer = csv.DictWriter(outfile, fieldnames=fieldnames)
+    with open(args.input, "r+", encoding="utf-8-sig") as f_in, open(args.output, "w") as f_out:
+        reader = csv.DictReader(f_in)
+        fieldnames = reader.fieldnames + ["prediction", "tags"]
+        writer = csv.DictWriter(f_out, fieldnames=fieldnames)
         writer.writeheader()
         for row in reader:
             affiliation = row["affiliation"].lower()
@@ -85,8 +89,14 @@ def main():
             ids, flattened_predictions = conduct_inference(model, inputs)
             prediction = postprocess_output(
                 tokenizer, ids, flattened_predictions, inputs)
-            joined_prediction = construct_string(affiliation, prediction)
-            row["prediction"] = joined_prediction
+            tags_joined = ", ".join(
+                prediction) if prediction is not None else None
+            row["tags"] = tags_joined
+            if prediction is None:
+                row["prediction"] = None
+            else:
+                joined_prediction = construct_string(affiliation, prediction)
+                row["prediction"] = joined_prediction
             writer.writerow(row)
 
 
