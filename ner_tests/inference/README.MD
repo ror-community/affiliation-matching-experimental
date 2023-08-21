@@ -6,10 +6,7 @@ This script is for testing fine-tuned BERT models trained on data from ner_index
 
 ## Model Downloads
 
-Two versions of the fine-tuned models can be downloaded from the following links:
-
-1. [500K-5-epoch model](https://huggingface.co/poodledude/ner-test-bert-base-uncased-finetuned-500K-5-epoch/tree/main)
-2. [500K-AdamW-1-epoch model](https://huggingface.co/poodledude/ner-test-bert-base-uncased-finetuned-500K-AdamW-1-epoch/tree/main)
+The model can be downloaded [here](https://huggingface.co/poodledude/ner-test-bert-base-uncased-finetuned-500K-AdamW-3-epoch-locations/tree/main)
 
 
 ## Dependencies
@@ -18,11 +15,7 @@ Two versions of the fine-tuned models can be downloaded from the following links
 - PyTorch
 - Transformers
 
-To install the required packages, use the following:
-
-```
-pip install torch transformers
-```
+Download the model from the [huggingface repo](https://huggingface.co/poodledude/ner-test-bert-base-uncased-finetuned-500K-AdamW-3-epoch-locations/tree/main).
 
 ## Usage
 
@@ -39,6 +32,6 @@ python inference.py -i <path_to_input_csv> -m <path_to_model_directory> [-o <pat
 ### Example
 
 ```
-python inference.py -i affiliations.csv -m ./models/500K-5-epoch
+python inference.py -i affiliations.csv -m ./model
 ```
 
