@@ -112,7 +112,7 @@ def parse_arguments():
     parser.add_argument("-o", "--output", help="Output CSV file")
     parser.add_argument("-d", "--data_dump_file", help="ROR data dump file")
     parser.add_argument(
-        "-t", "--outliers", default="outliers.csv", help="outliers entries CSV file")
+        "-t", "--outliers", default="outliers.csv", help="CSV file containing outlier entries")
     parser.add_argument("-l", "--length", type=int, default=5,
                         help="Minimum length of substring to keep (default: 5)")
     return parser.parse_args()
