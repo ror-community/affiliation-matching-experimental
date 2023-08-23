@@ -44,8 +44,6 @@ def postprocess_output(tokenizer, ids, flattened_predictions, inputs):
     for token_pred, mapping in zip(wp_preds, inputs["offset_mapping"].squeeze().tolist()):
         if mapping[0] == 0 and mapping[1] != 0:
             prediction.append(token_pred[1])
-        else:
-            continue
     invalid_tag_combinations = all(tag in [
                                    "I-ORG", "B-LOC", "I-LOC", "O"] for tag in prediction) and "B-ORG" not in prediction
     if invalid_tag_combinations:
