@@ -58,7 +58,7 @@ def calculate_thresholds_for_type(entity_type, entity_data):
     return upper_bound
 
 
-def filter_csv(input_file, output_file, data_dump_file, excluded_file, min_length):
+def filter_csv(input_file, output_file, data_dump_file, outliers_file, min_length):
     seen_rows = set()
     name_upper_bounds = {}
     location_lengths = []
@@ -76,13 +76,13 @@ def filter_csv(input_file, output_file, data_dump_file, excluded_file, min_lengt
     location_upper_bound = calculate_thresholds_for_type(
         'Location', location_lengths)
 
-    with open(input_file, 'r') as f_in, open(output_file, 'w', newline='') as f_out, open(excluded_file, 'w', newline='') as f_excluded:
+    with open(input_file, 'r') as f_in, open(output_file, 'w', newline='') as f_out, open(outliers_file, 'w', newline='') as f_outliers:
         reader = csv.DictReader(f_in)
         writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
-        excluded_writer = csv.DictWriter(
-            f_excluded, fieldnames=reader.fieldnames)
+        outliers_writer = csv.DictWriter(
+            f_outliers, fieldnames=reader.fieldnames)
         writer.writeheader()
-        excluded_writer.writeheader()
+        outliers_writer.writeheader()
         for row in reader:
             row_hash = hashlib.sha1(str(row).encode()).hexdigest()
             substring_length = len(row['index_substring'])
@@ -92,13 +92,13 @@ def filter_csv(input_file, output_file, data_dump_file, excluded_file, min_lengt
                 if substring_length <= name_upper_bound:
                     writer.writerow(row)
                 else:
-                    excluded_writer.writerow(row)
+                    outliers_writer.writerow(row)
                 seen_rows.add(row_hash)
             elif row['entity_type'] == 'location' and row_hash not in seen_rows:
                 if substring_length <= location_upper_bound:
                     writer.writerow(row)
                 else:
-                    excluded_writer.writerow(row)
+                    outliers_writer.writerow(row)
                 seen_rows.add(row_hash)
 
 
@@ -109,7 +109,7 @@ def parse_arguments():
     parser.add_argument("-o", "--output", help="Output CSV file")
     parser.add_argument("-d", "--data_dump_file", help="ROR data dump file")
     parser.add_argument(
-        "-e", "--excluded", default="excluded.csv", help="Excluded entries CSV file")
+        "-t", "--outliers", default="outliers.csv", help="outliers entries CSV file")
     parser.add_argument("-l", "--length", type=int, default=5,
                         help="Minimum length of substring to keep (default: 5)")
     return parser.parse_args()
@@ -118,7 +118,7 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     filter_csv(args.input, args.output, args.data_dump_file,
-               args.excluded, args.length)
+               args.outliers, args.length)
 
 
 if __name__ == "__main__":
