@@ -1,6 +1,6 @@
 # NER Indexes
 
-This Python script finds the start and stop indices of organization names within affiliation strings by comparing them to ROR records from the [ROR data dump](https://zenodo.org/record/8190709). The organization names are extracted from the ROR data dump file and are used to search through a provided list of affiliations. The script outputs a CSV file that contains each affiliation string, its associated ROR ID, and the start and stop indices of the organization name within the string. Input assumes the same format as the [fasttext model training data](https://huggingface.co/datasets/poodledude/ror-predictor/tree/main), but can easily be tweaked to your needs.
+This Python script finds the start and stop indices of organization names within affiliation strings by comparing them to ROR records from the [ROR data dump](https://zenodo.org/record/8190709). The organization names are extracted from the ROR data dump file and are used to search through a provided list of affiliations. Variant names for location matching are derived using data from [CLDR](https://cldr.unicode.org/). The script outputs a CSV file that contains each affiliation string, its associated ROR ID, and the start and stop indices of the organization name within the string. Input assumes the same format as the [fasttext model training data](https://huggingface.co/datasets/poodledude/ror-predictor/tree/main), but can easily be tweaked to your needs.
 
 ## Installation
 
@@ -11,7 +11,7 @@ pip install -r requirements.txt
 ## Usage
 
 ```bash
-python ner_indexes.py -d data_dump_file -i input_file -o output_file
+python ner_indexes.py -d data_dump_file -i input_file -o output_file -c CLDR_names.pkl
 ```
 
 Arguments:
@@ -19,6 +19,7 @@ Arguments:
 * `-d` or `--data_dump_file`: Path to the ROR data dump file. This argument is required.
 * `-i` or `--input`: Path to the input file that contains validated affiliation string-ROR ID pairs. This argument is required.
 * `-o` or `--output`: Path to the output file where the script will write the results. valid_indexes.csv' is the default output file name.
+* `-c` or `--cldr_file`: Path to the CLDR pickle file which provides the alternate names.
 
 ## Output
 
@@ -49,7 +50,7 @@ This script filters a CSV file produced by the NER indexes script. It achieves t
 ## Usage
 
 ```bash
-python deduplicate_and_prune.py -i input_file -o output_file -d data_dump_file -e excluded_file -l min_length
+python deduplicate_and_remove_outliers.py -i input_file -o output_file -d data_dump_file -e excluded_file -l min_length
 ```
 
 Arguments:
