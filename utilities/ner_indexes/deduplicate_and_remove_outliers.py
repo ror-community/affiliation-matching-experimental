@@ -44,7 +44,11 @@ def get_max_length(record):
         return 0
 
 
-def calculate_thresholds_for_type(entity_type, entity_data):
+# ner_indexes.py returns some substrings that are invalid/too long. 
+# For locations, this function determines the quartiles of string lengths from the input data. 
+# It then calculates a threshold using Q3, added to a value derived from both the 
+# interquartile range and double the standard deviation, which is used as a filter on string length.
+def calculate_thresholds_for_locations(entity_data):
     if len(entity_data) <= 3:
         q1 = min(entity_data)
         q3 = max(entity_data)
@@ -73,8 +77,7 @@ def filter_csv(input_file, output_file, data_dump_file, outliers_file, min_lengt
         for record in records:
             name_upper_bounds[record['id']] = get_max_length(record)
 
-    location_upper_bound = calculate_thresholds_for_type(
-        'Location', location_lengths)
+    location_upper_bound = calculate_thresholds_for_locations(location_lengths)
 
     with open(input_file, 'r') as f_in, open(output_file, 'w', newline='') as f_out, open(outliers_file, 'w', newline='') as f_outliers:
         reader = csv.DictReader(f_in)
