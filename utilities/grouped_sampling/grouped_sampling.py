@@ -1,7 +1,7 @@
 import csv
 import argparse
 import hashlib
-from itertools import islice
+import random
 
 
 def compute_hash(ror_id, affiliation_string):
@@ -18,7 +18,11 @@ def sample_rows(input_file, output_file, n_hashes):
                 hash_to_rows[hash_val] = []
             hash_to_rows[hash_val].append(row)
 
-    sampled_hashes = list(islice(hash_to_rows.keys(), n_hashes))
+    if n_hashes > len(hash_to_rows.keys()):
+        raise ValueError(f"Requested number of hashes ({n_hashes}) exceeds available unique hashes ({len(hash_to_rows.keys())}).")
+
+    sampled_hashes = random.sample(list(hash_to_rows.keys()), n_hashes)
+
     with open(output_file, 'w') as file:
         fieldnames = ["ror_id", "affiliation_string", "entity_type",
                       "start_index", "stop_index", "index_substring"]
