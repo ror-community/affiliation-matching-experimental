@@ -19,16 +19,16 @@ def calculate_counts(results_set):
     return true_pos, false_pos, false_neg
 
 
+def safe_div(n, d, default_ret=0):
+    return n / d if d != 0 else default_ret
+
+
 def calculate_metrics(true_pos, false_pos, false_neg):
-    precision = true_pos / \
-        (true_pos + false_pos) if true_pos + false_pos > 0 else 0
-    recall = true_pos / (true_pos + false_neg) if true_pos + \
-        false_neg > 0 else 0
-    f1_score = 2 * (precision * recall) / (precision +
-                                           recall) if precision + recall > 0 else 0
+    precision = safe_div(true_pos, true_pos + false_pos)
+    recall = safe_div(true_pos, true_pos + false_neg)
+    f1_score = safe_div(2 * precision * recall, precision + recall)
     beta = 0.5
-    f0_5_score = (1 + beta**2) * (precision * recall) / ((beta**2 *
-                                                          precision) + recall) if (beta**2 * precision) + recall > 0 else 0
+    f0_5_score = safe_div((1 + beta**2) * (precision * recall), (beta**2 * precision) + recall)
     return precision, recall, f1_score, f0_5_score
 
 
