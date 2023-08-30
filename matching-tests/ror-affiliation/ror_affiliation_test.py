@@ -2,7 +2,6 @@ import csv
 import argparse
 import logging
 import requests
-from urllib.parse import quote
 from datetime import datetime
 
 now = datetime.now()
@@ -45,7 +44,13 @@ def parse_and_query(input_file, output_file):
 				else:
 					predicted_ids = chosen_results[0][0] if chosen_results else None
 					prediction_scores = chosen_results[0][1] if chosen_results else None
-				match = 'Y' if any([result[0] == row['ror_id'] for result in chosen_results]) else 'N' if predicted_ids else 'NP'
+				if predicted_ids:
+					if any([result[0] == row['ror_id'] for result in prediction]):
+						match = 'Y'
+					else:
+						match = 'N'
+				else:
+					match = 'NP'
 				row.update({
 					"prediction": predicted_ids,
 					"score": prediction_scores,
