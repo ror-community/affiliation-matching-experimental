@@ -2,7 +2,6 @@ import csv
 import argparse
 import logging
 import requests
-from urllib.parse import quote
 from datetime import datetime
 from predictor import Predictor
 
