@@ -62,15 +62,17 @@ def parse_and_query(input_file, output_file, min_fasttext_probability, match_ord
 				affiliation = row['affiliation']
 				prediction = ensemble_match(affiliation, min_fasttext_probability, match_order)
 				if prediction:
-					if len(prediction) > 1:
-						predicted_ids = "; ".join([result[0] for result in prediction])
-						prediction_scores = "; ".join([str(result[1]) for result in prediction])
-					else:
-						predicted_ids = prediction[0][0]
-						prediction_scores = prediction[0][1]
+				    predicted_ids = "; ".join([result[0] for result in prediction])
+				    prediction_scores = "; ".join([str(result[1]) for result in prediction])
 				else:
-					predicted_ids, prediction_scores = None, None
-				match = 'Y' if predicted_ids and any([result[0] == row['ror_id'] for result in prediction]) else 'N' if predicted_ids else 'NP'
+				    predicted_ids, prediction_scores = None, None
+				if predicted_ids:
+				    if any([result[0] == row['ror_id'] for result in prediction]):
+				        match = 'Y'
+				    else:
+				        match = 'N'
+				else:
+				    match = 'NP'
 				row.update({
 					"prediction": predicted_ids,
 					"probability": prediction_scores,
