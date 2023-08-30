@@ -30,7 +30,13 @@ def parse_and_query(input_file, output_file):
                 affiliation = row['affiliation']
                 predicted_ror_id = openalex_prediction(
                     affiliation)
-                match = 'Y' if predicted_ror_id and predicted_ror_id == row['ror_id'] else ('NP' if not predicted_ror_id else 'N')
+                if predicted_ror_id:
+                    if predicted_ror_id == row['ror_id']:
+                        match = 'Y'
+                    else:
+                        match = 'N'
+                else:
+                    match = 'NP'
                 with open(output_file, 'a') as f_out:
                     writer = csv.writer(f_out)
                     writer.writerow(
