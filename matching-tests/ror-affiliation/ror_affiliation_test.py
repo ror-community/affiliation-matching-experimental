@@ -44,22 +44,25 @@ def parse_and_query(input_file, output_file):
 				else:
 					predicted_ids = chosen_results[0][0] if chosen_results else None
 					prediction_scores = chosen_results[0][1] if chosen_results else None
+					
 				if predicted_ids:
-					if any([result[0] == row['ror_id'] for result in prediction]):
+					if any([result[0] == row['ror_id'] for result in chosen_results]):
 						match = 'Y'
 					else:
 						match = 'N'
+				elif not predicted_ids and (not row['ror_id'] or row['ror_id'] == 'NP'):
+					match = 'TN'
 				else:
 					match = 'NP'
+
 				row.update({
-					"prediction": predicted_ids,
+					"predicted_ror_id": predicted_ids,
 					"score": prediction_scores,
 					"match": match
 				})
 				writer.writerow(row)
 	except Exception as e:
 		logging.error(f'Error in parse_and_query: {e}')
-
 
 
 def parse_arguments():
