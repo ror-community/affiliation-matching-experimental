@@ -13,30 +13,36 @@ def load_results_set(f):
 
 def calculate_counts(results_set):
     true_pos = sum(
-        1 for row in results_set if row['match'] == 'Y' and row['predicted_ror_id'])
+        1 for row in results_set if row['match'] == 'Y' and row['predicted_ror_id'] != 'NP')
     false_pos = sum(1 for row in results_set if row['match'] == 'N')
     false_neg = sum(1 for row in results_set if row['match'] == 'NP')
-    return true_pos, false_pos, false_neg
+    # Adding True Negative (TN) calculation
+    true_neg = sum(
+        1 for row in results_set if row['match'] == 'N' and row['predicted_ror_id'] == 'NP')
+    return true_pos, false_pos, false_neg, true_neg
 
 
 def safe_div(n, d, default_ret=0):
     return n / d if d != 0 else default_ret
 
 
-def calculate_metrics(true_pos, false_pos, false_neg):
+def calculate_metrics(true_pos, false_pos, false_neg, true_neg):
     precision = safe_div(true_pos, true_pos + false_pos)
     recall = safe_div(true_pos, true_pos + false_neg)
     f1_score = safe_div(2 * precision * recall, precision + recall)
     beta = 0.5
     f0_5_score = safe_div((1 + beta**2) * (precision * recall), (beta**2 * precision) + recall)
-    return precision, recall, f1_score, f0_5_score
+    # Adding Specificity and FNR calculations
+    specificity = safe_div(true_neg, true_neg + false_pos)
+    fnr = safe_div(false_neg, false_neg + true_pos)
+    return precision, recall, f1_score, f0_5_score, specificity, fnr
 
 
-def write_to_csv(filename, precision, recall, f1_score, f0_5_score):
+def write_to_csv(filename, metrics):
     with open(filename, 'w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["Precision", "Recall", "F1 Score", "F0.5 Score"])
-        writer.writerow([precision, recall, f1_score, f0_5_score])
+        writer.writerow(["Precision", "Recall", "F1 Score", "F0.5 Score", "Specificity", "FNR"])
+        writer.writerow(metrics)
 
 
 def parse_arguments():
@@ -53,11 +59,10 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     results_set = load_results_set(args.input)
-    true_pos, false_pos, false_neg = calculate_counts(results_set)
-    precision, recall, f1_score, f0_5_score = calculate_metrics(
-        true_pos, false_pos, false_neg)
-    print(f"Precision: {precision}\nRecall: {recall}\nF1 Score: {f1_score}\nF0.5 Score: {f0_5_score}")
-    write_to_csv(args.output, precision, recall, f1_score, f0_5_score)
+    true_pos, false_pos, false_neg, true_neg = calculate_counts(results_set)
+    metrics = calculate_metrics(true_pos, false_pos, false_neg, true_neg)
+    print(f"Precision: {metrics[0]}\nRecall: {metrics[1]}\nF1 Score: {metrics[2]}\nF0.5 Score: {metrics[3]}\nSpecificity: {metrics[4]}\nFNR: {metrics[5]}")
+    write_to_csv(args.output, metrics)
 
 
 if __name__ == "__main__":
