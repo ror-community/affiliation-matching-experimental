@@ -59,26 +59,29 @@ def parse_and_query(input_file, output_file, min_fasttext_probability, match_ord
 			writer = csv.DictWriter(f_out, fieldnames=fieldnames)
 			writer.writeheader()
 			for row in reader:
-				affiliation = row['affiliation']
-				prediction = ensemble_match(affiliation, min_fasttext_probability, match_order)
-				if prediction:
-				    predicted_ids = "; ".join([result[0] for result in prediction])
-				    prediction_scores = "; ".join([str(result[1]) for result in prediction])
-				else:
-				    predicted_ids, prediction_scores = None, None
-				if predicted_ids:
-				    if any([result[0] == row['ror_id'] for result in prediction]):
-				        match = 'Y'
-				    else:
-				        match = 'N'
-				else:
-				    match = 'NP'
-				row.update({
-					"prediction": predicted_ids,
-					"probability": prediction_scores,
-					"match": match
-				})
-				writer.writerow(row)
+			    affiliation = row['affiliation']
+			    prediction = ensemble_match(affiliation, min_fasttext_probability, match_order)
+			    if prediction:
+			        predicted_ids = "; ".join([result[0] for result in prediction])
+			        prediction_scores = "; ".join([str(result[1]) for result in prediction])
+			    else:
+			        predicted_ids, prediction_scores = None, None
+			    if predicted_ids:
+			        if any([result[0] == row['ror_id'] for result in prediction]):
+			            match = 'Y'
+			        else:
+			            match = 'N'
+			    elif not predicted_ids and (not row['ror_id'] or row['ror_id'] == 'NP'):
+			        match = 'TN'
+			    else:
+			        match = 'NP'
+
+			    row.update({
+			        "predicted_ror_id": predicted_ids,
+			        "probability": prediction_scores,
+			        "match": match
+			    })
+			    writer.writerow(row)
 	except Exception as e:
 		logging.error(f'Error in parse_and_query: {e}')
 
