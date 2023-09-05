@@ -119,9 +119,10 @@ def data_dump_to_fake_affiliation_strings(data_dump_file, output_file):
     with open(data_dump_file, 'r+') as f_in:
         records = json.load(f_in)
         for record in records:
-            ror_id = record['id']
-            fake_affiliation_strings[ror_id] = fake_affiliations(
-                record)
+            if record['status'] != 'withdrawn':
+                ror_id = record['id']
+                fake_affiliation_strings[ror_id] = fake_affiliations(
+                    record)
     with open(output_file, 'w') as f_out:
         writer = csv.writer(f_out)
         for key, values in fake_affiliation_strings.items():
