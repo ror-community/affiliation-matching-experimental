@@ -1,4 +1,4 @@
-# FAISS Embeddings Index Builder
+# FAISS Index Builder
 
 ## Description
 
@@ -21,7 +21,7 @@ pip install faiss-gpu
 ## Usage
 
 ```bash
-python script_name.py -f INPUT_FILE [-c MODEL_CHECKPOINT] [-d DEVICE] [-i INDEX_FILE] [-m MAPPING_FILE]
+python build-index.py -f INPUT_FILE [-c MODEL_CHECKPOINT] [-d DEVICE] [-i INDEX_FILE] [-m MAPPING_FILE]
 ```
 
 ### Parameters:
