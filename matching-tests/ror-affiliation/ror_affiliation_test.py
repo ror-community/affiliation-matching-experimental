@@ -10,59 +10,52 @@ logging.basicConfig(filename=f'{script_start}_ensemble_test.log', level=logging.
 
 
 def query_affiliation(affiliation):
-	chosen_results = []
-	try:
-		url = "https://api.ror.org/organizations"
-		params = {"affiliation": affiliation}
-		r = requests.get(url, params=params)
-		api_response = r.json()
-		results = api_response['items']
-		if results:
-			for result in results:
-				if result['chosen']:
-					chosen_id = result['organization']['id']
-					score = result['score']
-					chosen_results.append((chosen_id, score))
-	except Exception as e:
-		logging.error(f'Error for query: {affiliation} - {e}')
-	return chosen_results
+    chosen_result = None
+    try:
+        url = "https://api.ror.org/organizations"
+        params = {"affiliation": affiliation}
+        r = requests.get(url, params=params)
+        api_response = r.json()
+        results = api_response['items']
+        if results:
+            for result in results:
+                if result['chosen']:
+                    chosen_id = result['organization']['id']
+                    score = result['score']
+                    chosen_result = chosen_id, score
+                    break
+    except Exception as e:
+        logging.error(f'Error for query: {affiliation} - {e}')
+    return chosen_result
 
 
 def parse_and_query(input_file, output_file):
-	try:
-		with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
-			reader = csv.DictReader(f_in)
-			fieldnames = reader.fieldnames + ["predicted_ror_id", "score", "match"]
-			writer = csv.DictWriter(f_out, fieldnames=fieldnames)
-			writer.writeheader()
-			for row in reader:
-				affiliation = row['affiliation']
-				chosen_results = query_affiliation(affiliation)
-				if len(chosen_results) > 1:
-					predicted_ids = "; ".join([result[0] for result in chosen_results])
-					prediction_scores = "; ".join([str(result[1]) for result in chosen_results])
-				else:
-					predicted_ids = chosen_results[0][0] if chosen_results else None
-					prediction_scores = chosen_results[0][1] if chosen_results else None
-					
-				if predicted_ids:
-					if any([result[0] == row['ror_id'] for result in chosen_results]):
-						match = 'Y'
-					else:
-						match = 'N'
-				elif not predicted_ids and (not row['ror_id'] or row['ror_id'] == 'NP'):
-					match = 'TN'
-				else:
-					match = 'NP'
+    try:
+        with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
+            reader = csv.DictReader(f_in)
+            fieldnames = reader.fieldnames + ["predicted_ror_id", "score", "match"]
+            writer = csv.DictWriter(f_out, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in reader:
+                affiliation = row['affiliation']
+                chosen_result = query_affiliation(affiliation)
+                predicted_id, prediction_score = chosen_result if chosen_result else (None, None)
+                if predicted_id:
+                    match = 'Y' if predicted_id == row['ror_id'] else 'N'
+                elif not predicted_id and (not row['ror_id'] or row['ror_id'] == 'NP'):
+                    match = 'TN'
+                else:
+                    match = 'NP'
 
-				row.update({
-					"predicted_ror_id": predicted_ids,
-					"score": prediction_scores,
-					"match": match
-				})
-				writer.writerow(row)
-	except Exception as e:
-		logging.error(f'Error in parse_and_query: {e}')
+                row.update({
+                    "predicted_ror_id": predicted_id,
+                    "score": prediction_score,
+                    "match": match
+                })
+                writer.writerow(row)
+    except Exception as e:
+        logging.error(f'Error in parse_and_query: {e}')
+
 
 
 def parse_arguments():
