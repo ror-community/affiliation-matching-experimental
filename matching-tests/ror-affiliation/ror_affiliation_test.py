@@ -41,12 +41,11 @@ def parse_and_query(input_file, output_file):
                 chosen_result = query_affiliation(affiliation)
                 predicted_id, prediction_score = chosen_result if chosen_result else (None, None)
                 if predicted_id:
-                    match = 'Y' if predicted_id == row['ror_id'] else 'N'
+                    match = 'Y' if predicted_id in row['ror_id'] else 'N'
                 elif not predicted_id and (not row['ror_id'] or row['ror_id'] == 'NP'):
                     match = 'TN'
                 else:
                     match = 'NP'
-
                 row.update({
                     "predicted_ror_id": predicted_id,
                     "score": prediction_score,
