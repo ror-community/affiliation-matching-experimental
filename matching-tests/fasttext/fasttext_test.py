@@ -22,9 +22,16 @@ def parse_and_query(input_file, output_file, min_fasttext_probability):
                 fasttext_prediction = PREDICTOR.predict_ror_id(
                     affiliation, min_fasttext_probability)
                 predicted_ror_id, prediction_probability = fasttext_prediction
-                match = 'Y' if predicted_ror_id and predicted_ror_id == row['ror_id'] else ('NP' if not predicted_ror_id else 'N')
+                if predicted_ror_id and predicted_ror_id in row['ror_id']:
+                    match = 'Y'
+                elif not predicted_ror_id and row['ror_id'] == 'NP':
+                    match = 'TN'
+                elif not predicted_ror_id:
+                    match = 'NP'
+                else:
+                    match = 'N'
                 row.update({
-                    "prediction": predicted_ror_id,
+                    "predicted_ror_id": predicted_ror_id,
                     "probability": prediction_probability,
                     "match": match
                 })

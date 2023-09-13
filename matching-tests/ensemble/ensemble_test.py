@@ -12,22 +12,23 @@ logging.basicConfig(filename=f'{script_start}_ensemble_test.log', level=logging.
 
 
 def query_affiliation(affiliation):
-	chosen_results = []
-	try:
-		url = "https://api.ror.org/organizations"
-		params = {"affiliation": affiliation}
-		r = requests.get(url, params=params)
-		api_response = r.json()
-		results = api_response['items']
-		if results:
-			for result in results:
-				if result['chosen']:
-					chosen_id = result['organization']['id']
-					score = result['score']
-					chosen_results.append((chosen_id, score))
-	except Exception as e:
-		logging.error(f'Error for query: {affiliation} - {e}')
-	return chosen_results
+    chosen_result = None
+    try:
+        url = "https://api.ror.org/organizations"
+        params = {"affiliation": affiliation}
+        r = requests.get(url, params=params)
+        api_response = r.json()
+        results = api_response['items']
+        if results:
+            for result in results:
+                if result['chosen']:
+                    chosen_id = result['organization']['id']
+                    score = result['score']
+                    chosen_result = chosen_id, score
+                    break
+    except Exception as e:
+        logging.error(f'Error for query: {affiliation} - {e}')
+    return chosen_result
 
 
 def ensemble_match(affiliation, min_fasttext_probability, match_order='fasttext'):
@@ -59,26 +60,21 @@ def parse_and_query(input_file, output_file, min_fasttext_probability, match_ord
 			writer = csv.DictWriter(f_out, fieldnames=fieldnames)
 			writer.writeheader()
 			for row in reader:
-				affiliation = row['affiliation']
-				prediction = ensemble_match(affiliation, min_fasttext_probability, match_order)
-				if prediction:
-				    predicted_ids = "; ".join([result[0] for result in prediction])
-				    prediction_scores = "; ".join([str(result[1]) for result in prediction])
-				else:
-				    predicted_ids, prediction_scores = None, None
-				if predicted_ids:
-				    if any([result[0] == row['ror_id'] for result in prediction]):
-				        match = 'Y'
-				    else:
-				        match = 'N'
-				else:
-				    match = 'NP'
-				row.update({
-					"prediction": predicted_ids,
-					"probability": prediction_scores,
-					"match": match
-				})
-				writer.writerow(row)
+			    affiliation = row['affiliation']
+			    prediction = ensemble_match(affiliation, min_fasttext_probability, match_order)
+			    predicted_id, prediction_score = prediction if prediction else (None, None)
+			    if predicted_id:
+                    match = 'Y' if predicted_id in row['ror_id'] else 'N'
+                elif not predicted_id and (not row['ror_id'] or row['ror_id'] == 'NP'):
+                    match = 'TN'
+                else:
+                    match = 'NP'
+			    row.update({
+			        "predicted_ror_id": predicted_ids,
+			        "probability": prediction_scores,
+			        "match": match
+			    })
+			    writer.writerow(row)
 	except Exception as e:
 		logging.error(f'Error in parse_and_query: {e}')
 
