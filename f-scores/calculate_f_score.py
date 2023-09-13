@@ -8,7 +8,20 @@ def load_results_set(f):
     with open(f, 'r+', encoding='utf-8-sig') as f_in:
         reader = csv.DictReader(f_in)
         results_set = [row for row in reader]
+        for row in results_set:
+            row['match'] = calculate_match(row)
     return results_set
+
+
+def calculate_match(row):
+    if row['predicted_ror_id'] in row['ror_id']:
+        return 'Y'
+    elif row['predicted_ror_id'] and row['predicted_ror_id'] not in row['ror_id']:
+        return 'N'
+    elif not row['predicted_ror_id'] and row['ror_id'] == 'NP':
+        return 'TN'
+    else:
+        return 'NP'
 
 
 def calculate_counts(results_set):
