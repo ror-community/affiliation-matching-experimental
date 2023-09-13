@@ -56,23 +56,16 @@ def parse_and_query(input_file, output_file, min_fasttext_probability, match_ord
 		with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
 			reader = csv.DictReader(f_in)
 			fieldnames = reader.fieldnames + \
-				["predicted_ror_id", "probability", "match"]
+				["predicted_ror_id", "prediction_score"]
 			writer = csv.DictWriter(f_out, fieldnames=fieldnames)
 			writer.writeheader()
 			for row in reader:
 			    affiliation = row['affiliation']
 			    prediction = ensemble_match(affiliation, min_fasttext_probability, match_order)
 			    predicted_id, prediction_score = prediction if prediction else (None, None)
-			    if predicted_id:
-                    match = 'Y' if predicted_id in row['ror_id'] else 'N'
-                elif not predicted_id and (not row['ror_id'] or row['ror_id'] == 'NP'):
-                    match = 'TN'
-                else:
-                    match = 'NP'
 			    row.update({
 			        "predicted_ror_id": predicted_ids,
-			        "probability": prediction_scores,
-			        "match": match
+			        "prediction_score": prediction_score,
 			    })
 			    writer.writerow(row)
 	except Exception as e:
@@ -86,7 +79,7 @@ def parse_arguments():
 	parser.add_argument('-o', '--output', help='Output CSV file',
 						default='ensemble_results.csv')
 	parser.add_argument(
-		'-p', '--min_fasttext_probability', help='min_fasttext_probability level for the fasttext predictor', type=float, default=0.8)
+		'-p', '--min_fasttext_probability', help='min_fasttext_probability level for the fasttext predictor', type=float, default=0.7)
 	parser.add_argument('-m', '--match_order', choices=['fasttext', 'affiliation'],
 						help='Order of matching methods ("fasttext" or "affiliation")', default='fasttext')
 	return parser.parse_args()
