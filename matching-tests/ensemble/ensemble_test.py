@@ -64,7 +64,7 @@ def parse_and_query(input_file, output_file, min_fasttext_probability, match_ord
 			    prediction = ensemble_match(affiliation, min_fasttext_probability, match_order)
 			    predicted_id, prediction_score = prediction if prediction else (None, None)
 			    row.update({
-			        "predicted_ror_id": predicted_ids,
+			        "predicted_ror_id": predicted_id,
 			        "prediction_score": prediction_score,
 			    })
 			    writer.writerow(row)
