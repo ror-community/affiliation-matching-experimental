@@ -14,26 +14,17 @@ def parse_and_query(input_file, output_file, min_fasttext_probability):
     try:
         with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
             reader = csv.DictReader(f_in)
-            fieldnames = reader.fieldnames + ["predicted_ror_id", "probability", "match"]
+            fieldnames = reader.fieldnames + ["predicted_ror_id", "prediction_score"]
             writer = csv.DictWriter(f_out, fieldnames=fieldnames)
             writer.writeheader()
             for row in reader:
                 affiliation = row['affiliation']
                 fasttext_prediction = PREDICTOR.predict_ror_id(
                     affiliation, min_fasttext_probability)
-                predicted_ror_id, prediction_probability = fasttext_prediction
-                if predicted_ror_id and predicted_ror_id in row['ror_id']:
-                    match = 'Y'
-                elif not predicted_ror_id and row['ror_id'] == 'NP':
-                    match = 'TN'
-                elif not predicted_ror_id:
-                    match = 'NP'
-                else:
-                    match = 'N'
+                predicted_ror_id, prediction_score = fasttext_prediction
                 row.update({
                     "predicted_ror_id": predicted_ror_id,
-                    "probability": prediction_probability,
-                    "match": match
+                    "prediction_score": prediction_score
                 })
                 writer.writerow(row)
     except Exception as e:

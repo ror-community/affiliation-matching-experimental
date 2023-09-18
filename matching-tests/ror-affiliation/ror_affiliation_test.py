@@ -6,7 +6,7 @@ from datetime import datetime
 
 now = datetime.now()
 script_start = now.strftime("%Y%m%d_%H%M%S")
-logging.basicConfig(filename=f'{script_start}_ensemble_test.log', level=logging.ERROR, format='%(asctime)s %(levelname)s %(message)s')
+logging.basicConfig(filename=f'{script_start}_ror-affiliation_test.log', level=logging.ERROR, format='%(asctime)s %(levelname)s %(message)s')
 
 
 def query_affiliation(affiliation):
@@ -33,23 +33,16 @@ def parse_and_query(input_file, output_file):
     try:
         with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
             reader = csv.DictReader(f_in)
-            fieldnames = reader.fieldnames + ["predicted_ror_id", "score", "match"]
+            fieldnames = reader.fieldnames + ["predicted_ror_id", "prediction_score"]
             writer = csv.DictWriter(f_out, fieldnames=fieldnames)
             writer.writeheader()
             for row in reader:
                 affiliation = row['affiliation']
                 chosen_result = query_affiliation(affiliation)
                 predicted_id, prediction_score = chosen_result if chosen_result else (None, None)
-                if predicted_id:
-                    match = 'Y' if predicted_id in row['ror_id'] else 'N'
-                elif not predicted_id and (not row['ror_id'] or row['ror_id'] == 'NP'):
-                    match = 'TN'
-                else:
-                    match = 'NP'
                 row.update({
                     "predicted_ror_id": predicted_id,
-                    "score": prediction_score,
-                    "match": match
+                    "prediction_score": prediction_score
                 })
                 writer.writerow(row)
     except Exception as e:
