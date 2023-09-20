@@ -1,0 +1,13 @@
+dataset,strategy,Precision,Recall,F0.5 Score,F1 Score
+20221209_APS_aff_mapping_valid,affiliation-fasttext_ensemble,0.833872178,0.935565883,0.852402999,0.881796744
+20221209_APS_aff_mapping_valid,fasttext,0.889753567,0.825722582,0.876165054,0.856543081
+20221209_APS_aff_mapping_valid,fasttext-ror_ensemble,0.824494567,0.935091079,0.844470261,0.876317121
+20221209_APS_aff_mapping_valid,ror-affiliation,0.890362136,0.716127499,0.8490473,0.793796357
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,affiliation-fasttext_ensemble,0.86259542,0.921978582,0.873852102,0.891298989
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,fasttext,0.854311199,0.716899534,0.822770312,0.779596636
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,fasttext-ror_ensemble,0.841151216,0.920320111,0.855876262,0.878956551
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,ror-affiliation,0.90997921,0.693221413,0.856421695,0.786947141
+20230903_affiliation_matching_logs_valid,affiliation-fasttext_ensemble,0.777777778,0.865979381,0.793950851,0.819512195
+20230903_affiliation_matching_logs_valid,fasttext,0.814589666,0.668329177,0.780430984,0.734246575
+20230903_affiliation_matching_logs_valid,fasttext-ror_ensemble,0.699074074,0.853107345,0.725264169,0.768447837
+20230903_affiliation_matching_logs_valid,ror-affiliation,0.956043956,0.612676056,0.859683794,0.746781116
