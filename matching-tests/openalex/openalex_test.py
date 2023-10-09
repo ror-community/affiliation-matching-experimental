@@ -15,32 +15,22 @@ def openalex_prediction(affiliation_string):
     url = 'http://127.0.0.1:5000/invocations'
     test_data ={'affiliation_string':[affiliation_string]}
     response = requests.post(url, json = test_data).json()
-    # Response from OpenAlex service is [{internal institution ID, ROR ID}]
     return response[0]['ror_id']
 
 
 def parse_and_query(input_file, output_file):
     try:
-        with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
+        with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w', newline='') as f_out:
             reader = csv.DictReader(f_in)
             writer = csv.writer(f_out)
             writer.writerow(
-                reader.fieldnames + ["openalex_prediction", "match"])
+                reader.fieldnames + ["predicted_ror_id"])
             for row in reader:
                 affiliation = row['affiliation']
                 predicted_ror_id = openalex_prediction(
                     affiliation)
-                if predicted_ror_id:
-                    if predicted_ror_id == row['ror_id']:
-                        match = 'Y'
-                    else:
-                        match = 'N'
-                else:
-                    match = 'NP'
-                with open(output_file, 'a') as f_out:
-                    writer = csv.writer(f_out)
-                    writer.writerow(
-                        list(row.values()) + [predicted_ror_id, match])
+                new_row =  list(row.values()) + [predicted_ror_id]
+                writer.writerow(new_row)
     except Exception as e:
         logging.error(f'Error in parse_and_query: {e}')
 
