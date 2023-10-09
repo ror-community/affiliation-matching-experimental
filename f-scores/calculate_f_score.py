@@ -10,7 +10,6 @@ def load_results_set(f):
         results_set = [row for row in reader]
         for row in results_set:
             row['match'] = calculate_match(row)
-    print(results_set)
     return results_set
 
 
