@@ -1,0 +1,5 @@
+﻿Method,Metric,Total Executions,Average Execution Time,Max Execution Time,Median Execution Time
+fasttext,Time (seconds),1000,0.000025,0.000508,0.00002
+ensemble_fastext_ror,Time (seconds),1000,0.063931,1.798229,0.000217
+ensemble_ror_fasttext,Time (seconds),1000,0.600967,1.64468,0.581201
+ror_affiliation,Time (seconds),1000,0.631028,1.736288,0.608077
