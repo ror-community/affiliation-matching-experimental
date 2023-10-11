@@ -1,3 +1,4 @@
+import csv
 import time
 
 class LoopTimerContext:
@@ -20,8 +21,22 @@ class LoopTimerContext:
             median = sorted_times[middle_index]
         
         return {
-            'first_n': self.execution_times[:n],
+            'total_executions': len(self.execution_times),
             'average': sum(self.execution_times) / len(self.execution_times),
             'max': max(self.execution_times),
-            'median': median
+            'median': median,
         }
+
+    def write_stats_to_csv(self, filename="timing_stats.csv", n=10):
+        stats = self.get_stats(n)
+        with open(filename, 'w', newline='') as csvfile:
+            fieldnames = ['Metric', 'Total Executions', 'Average Execution Time', 'Max Execution Time', 'Median Execution Time']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerow({
+                'Metric': 'Time (seconds)',
+                'Total Executions': stats['total_executions'],
+                'Average Execution Time': f"{stats['average']:.6f}",
+                'Max Execution Time': f"{stats['max']:.6f}",
+                'Median Execution Time': f"{stats['median']:.6f}"
+        })

@@ -1,69 +1,43 @@
-## Overview
+# Overview
 
-`LoopTimerContext` is a utility class designed to time each iteration of loops for benchmarking and performance analysis.
+Provides an easy way to measure the time taken for processing rows in a CSV file. It's implemented as a Python context manager, making it versatile and reusable across different scripts.
 
-## How to Use
+## Usage:
 
-### 1. Importing:
+### 1. **Integrate into Your Script**:
 
-Ensure that the `LoopTimerContext` class is accessible from your script using an import statement:
+1. Import the required modules and classes:
 
-```python
-from timer import LoopTimerContext
-```
+    ```python
+    from LoopTimerContext import LoopTimerContext
+    ```
 
-### 2. Instantiation:
+2. Utilize the `LoopTimerContext` in your data processing script:
 
-Before entering the loop, instantiate the `LoopTimerContext`:
+    ```python
+    timer = LoopTimerContext()
 
-```python
-timer = LoopTimerContext()
-```
+    with open('your_input_file.csv', 'r') as f:
+        # ... your CSV reading logic here ...
 
-### 3. Using the Context Manager:
+        for row in your_csv_reader:
+            with timer:
+                # ... your row processing logic here ...
+    ```
 
-Within your loop, utilize the `with` statement to time each iteration:
+### 2. **Retrieve and Save Statistics**:
 
-```python
-for item in iterable:
-    with timer:
-        # Your loop logic goes here
-        process(item)
-```
-
-Every time the loop iterates, the time taken for that particular iteration is recorded.
-
-### 4. Retrieving Statistics:
-
-After loop execution, you can retrieve various timing statistics:
+After processing the rows, you can retrieve and save the statistics:
 
 ```python
-stats = timer.get_stats()
+timer.write_stats_to_csv("timing_statistics.csv")
 ```
 
-The `get_stats` method returns a dictionary containing:
+This will save the timing statistics to a file named `timing_statistics.csv`. You can specify a different filename if needed.
 
-- `first_n`: A list of the first 10 (by default) execution times.
-- `average`: The average execution time.
-- `max`: The maximum execution time recorded.
-- `median`: The median execution time.
+## Understanding the Results:
 
-You can adjust the number of "first_n" execution times by providing an argument to `get_stats`. For example, `timer.get_stats(5)` would return the first 5 execution times.
-
-## Example Usage:
-
-```python
-data = range(1000)
-
-timer = LoopTimerContext()
-for item in data:
-    with timer:
-        # Simulating some processing delay
-        time.sleep(0.01)
-
-stats = timer.get_stats()
-print(f"First 10 Execution Times: {'; '.join([str(x) for x in stats['first_n']])}")
-print(f"Average Execution Time: {stats['average']:.6f} seconds")
-print(f"Max Execution Time: {stats['max']:.6f} seconds")
-print(f"Median Execution Time: {stats['median']:.6f} seconds")
-```
+- **Total Executions**: The total number of times the loop was executed.
+- **Average Execution Time**: The average time (in seconds) taken to process a row.
+- **Max Execution Time**: The longest time (in seconds) taken to process a single row.
+- **Median Execution Time**: The median time (in seconds) taken for processing.
