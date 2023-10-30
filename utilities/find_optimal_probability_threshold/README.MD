@@ -30,4 +30,4 @@ For example:
 $ python find_optimal_probability_threshold.py -i test.csv -s 0.1 -e 0.9 -i 0.05
 ````
 
-The script generates a CSV file named `threshold_metrics_<timestamp>.csv` with precision, recall, and F1 scores for each increment of the threshold in the interval.
+The script generates a CSV file named `threshold_metrics_<timestamp>.csv` with precision, recall, F05, and F1 scores for each increment of the threshold in the interval.
