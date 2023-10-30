@@ -3,6 +3,7 @@ import argparse
 import logging
 from datetime import datetime
 from predictor import Predictor
+from timer import LoopTimerContext
 
 PREDICTOR = Predictor('models/')
 now = datetime.now()
@@ -12,21 +13,24 @@ logging.basicConfig(filename=f'{script_start}_ensemble_test.log', level=logging.
 
 def parse_and_query(input_file, output_file, min_fasttext_probability):
     try:
+        timed = LoopTimerContext()
         with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
             reader = csv.DictReader(f_in)
             fieldnames = reader.fieldnames + ["predicted_ror_id", "prediction_score"]
             writer = csv.DictWriter(f_out, fieldnames=fieldnames)
             writer.writeheader()
             for row in reader:
-                affiliation = row['affiliation']
-                fasttext_prediction = PREDICTOR.predict_ror_id(
-                    affiliation, min_fasttext_probability)
-                predicted_ror_id, prediction_score = fasttext_prediction
-                row.update({
-                    "predicted_ror_id": predicted_ror_id,
-                    "prediction_score": prediction_score
-                })
-                writer.writerow(row)
+                with timed:
+                    affiliation = row['affiliation']
+                    fasttext_prediction = PREDICTOR.predict_ror_id(
+                        affiliation, min_fasttext_probability)
+                    predicted_ror_id, prediction_score = fasttext_prediction
+                    row.update({
+                        "predicted_ror_id": predicted_ror_id,
+                        "prediction_score": prediction_score
+                    })
+                    writer.writerow(row)
+        return timed
     except Exception as e:
         logging.error(f'Error in parse_and_query: {e}')
 
@@ -44,7 +48,8 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
-    parse_and_query(args.input, args.output, args.min_fasttext_probability)
+    timed = parse_and_query(args.input, args.output, args.min_fasttext_probability)
+    timed.write_stats_to_csv("fasttext_timing_stats.csv")
 
 
 if __name__ == '__main__':
