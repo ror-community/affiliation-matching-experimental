@@ -1,0 +1,22 @@
+dataset,strategy,Precision,Recall,F0.5 Score,F1 Score
+20230903_affiliation_matching_logs_valid,ensemble-fasttext->ror_affiliation,0.699074074,0.853107345,0.725264169,0.768447837
+20221209_APS_aff_mapping_valid,ensemble-fasttext->ror_affiliation,0.824494567,0.935091079,0.844470261,0.876317121
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,ensemble-fasttext->ror_affiliation,0.841151216,0.920320111,0.855876262,0.878956551
+20221209_APS_aff_mapping_valid,ensemble-ror_affiliation->fasttext,0.833872178,0.935565883,0.852402999,0.881796744
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,ensemble-ror_affiliation->fasttext,0.86259542,0.921978582,0.873852102,0.891298989
+20230903_affiliation_matching_logs_valid,ensemble-ror_affiliation->fasttext,0.777777778,0.865979381,0.793950851,0.819512195
+20221209_APS_aff_mapping_valid,fasttext,0.889753567,0.825722582,0.876165054,0.856543081
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,fasttext,0.854311199,0.716899534,0.822770312,0.779596636
+20230903_affiliation_matching_logs_valid,fasttext,0.814589666,0.668329177,0.780430984,0.734246575
+20221209_APS_aff_mapping_valid,ror_affiliation,0.890362136,0.716127499,0.8490473,0.793796357
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,ror_affiliation,0.90997921,0.693221413,0.856421695,0.786947141
+20230903_affiliation_matching_logs_valid,ror_affiliation,0.956043956,0.612676056,0.859683794,0.746781116
+20221209_APS_aff_mapping_valid,semantic_scholar,0.839956975,0.957921072,0.861166815,0.895069037
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,semantic_scholar,0.830428135,0.963284853,0.853984527,0.891936279
+20230903_affiliation_matching_logs_valid,semantic_scholar,0.740890688,0.924242424,0.771500843,0.82247191
+20221209_APS_aff_mapping_valid,openalex,0.847429049,0.900932771,0.857615294,0.873362244
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,openalex,0.807150223,0.834844444,0.812541094,0.820763786
+20230903_affiliation_matching_logs_valid,openalex,0.745995423,0.829516539,0.761326483,0.785542169
+20221209_APS_aff_mapping_valid,ner_fallback,0.886972933,0.829917291,0.874942717,0.857497076
+20230628_Crossref_publisher_asserted_affiliation_string_ROR_IDs_valid,ner_fallback,0.89892905,0.874491291,0.893932839,0.886541794
+20230903_affiliation_matching_logs_valid,ner_fallback,0.91152815,0.80952381,0.889121339,0.857503153
