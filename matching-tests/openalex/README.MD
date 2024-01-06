@@ -5,6 +5,14 @@ Return fasttext affiliation matches for a given CSV file and compare to assigned
 ````
 pip install -r requirements.txt
 ````
+
+Install the timer library
+```
+git clone https://github.com/ror-community/affiliation-matching-experimental.git
+cd affiliation-matching-experimental/utilities/timer
+pip install .
+```
+
 Follow the instructions at https://github.com/adambuttrick/openalex-ror-predictor for running the OpenAlex models with ROR ID predictions
 
 ## usage

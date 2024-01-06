@@ -5,6 +5,13 @@ Return fasttext affiliation matches for a given CSV file and compare to assigned
 ````
 pip install -r requirements.txt
 ````
+Install the timer library
+```
+git clone https://github.com/ror-community/affiliation-matching-experimental.git
+cd affiliation-matching-experimental/utilities/timer
+pip install .
+```
+
 [Download the model files from Hugging Face](https://huggingface.co/poodledude/ror-predictor/tree/main) and place in a directory called  "models."
 
 ## usage

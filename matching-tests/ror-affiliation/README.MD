@@ -6,6 +6,13 @@ Return ROR affiliation services matches for a given CSV file and compare to assi
 pip install -r requirements.txt
 ````
 
+Install the timer library
+```
+git clone https://github.com/ror-community/affiliation-matching-experimental.git
+cd affiliation-matching-experimental/utilities/timer
+pip install .
+```
+
 ## usage
 Prepare a CSV file containing affiliation strings and assigned ROR IDs. Label the affiliation string column "affiliation" and the assigned ROR IDs "ror_id"
 
