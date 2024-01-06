@@ -29,8 +29,8 @@ class LoopTimerContext:
             'median': median,
         }
 
-    def write_stats_to_csv(self, filename="timing_stats.csv", n=10):
-        stats = self.get_stats(n)
+    def write_stats_to_csv(self, filename="timing_stats.csv"):
+        stats = self.get_stats()
         with open(filename, 'w', newline='') as csvfile:
             fieldnames = ['Metric', 'Total Executions', 'Average Execution Time',
                           'Max Execution Time', 'Median Execution Time']
