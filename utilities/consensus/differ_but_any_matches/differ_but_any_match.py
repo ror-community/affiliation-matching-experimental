@@ -50,14 +50,14 @@ def is_differ_but_any_match(row):
 
 
 def write_differ_but_any_match_to_csv(mismatches, output_file):
-    with open(output_file, mode='w', encoding='utf-8') as file:
         if mismatches:
-            fieldnames = list(mismatches[0][1].keys()) + ['Source File']
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
-            writer.writeheader()
-            for filename, mismatch in mismatches:
-                mismatch_row = {**mismatch, 'Source File': filename}
-                writer.writerow(mismatch_row)
+            with open(output_file, mode='w', encoding='utf-8') as file:
+                fieldnames = list(mismatches[0][1].keys()) + ['Source File']
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer.writeheader()
+                for filename, mismatch in mismatches:
+                    mismatch_row = {**mismatch, 'Source File': filename}
+                    writer.writerow(mismatch_row)
         else:
             print("No mismatches found to write to CSV.")
 
