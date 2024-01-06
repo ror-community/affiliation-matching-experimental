@@ -27,7 +27,6 @@ def read_csv(file_path):
 def find_consensus(row):
     strategies = ['ror-affiliation', 'fasttext', 'openalex', 'S2AFF']
     values = [row[strategy] for strategy in strategies]
-    value_counts = defaultdict(int)
     for value in values:
         value_counts[value] += 1
     consensus_sets = []
