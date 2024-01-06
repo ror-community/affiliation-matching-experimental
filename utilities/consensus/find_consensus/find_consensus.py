@@ -32,8 +32,8 @@ def find_consensus(row):
     consensus_sets = []
     for size in range(2, len(strategies) + 1):
         for subset in combinations(strategies, size):
-            subset_values = [row[strategy] for strategy in subset]
-            if all(value == subset_values[0] for value in subset_values):
+            subset_values = {row[strategy] for strategy in subset}
+            if len(subset_values) == 1:
                 consensus_sets.append(subset)
     return consensus_sets
 
