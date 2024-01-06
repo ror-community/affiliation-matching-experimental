@@ -27,8 +27,6 @@ def read_csv(file_path):
 
 def find_consensus(row):
     values = [row[strategy] for strategy in ALL_STRATEGIES]
-    for value in values:
-        value_counts[value] += 1
     consensus_sets = []
     for size in range(2, len(strategies) + 1):
         for subset in combinations(strategies, size):
