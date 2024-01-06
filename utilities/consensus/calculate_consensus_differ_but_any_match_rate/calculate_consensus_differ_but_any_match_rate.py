@@ -45,8 +45,7 @@ def is_consensus_mismatch(row):
     ror_id = row['ror_id']
     strategy_ror_ids = [row[strategy]
                         for strategy in strategies if strategy in row]
-    ror_id_match = any(
-        ror_id == strategy_ror_id for strategy_ror_id in strategy_ror_ids)
+    ror_id_match = ror_id in strategy_ror_ids
     strategies_differ = len(set(strategy_ror_ids)) > 1
     return ror_id_match and strategies_differ
 
@@ -56,8 +55,7 @@ def is_no_match(row):
     ror_id = row['ror_id']
     strategy_ror_ids = [row[strategy]
                         for strategy in strategies if strategy in row]
-    none_match_ror_id = all(
-        ror_id != strategy_ror_id for strategy_ror_id in strategy_ror_ids)
+    none_match_ror_id = ror_id not in strategy_ror_ids
     strategies_differ = len(set(strategy_ror_ids)) > 1
     return none_match_ror_id and strategies_differ
 

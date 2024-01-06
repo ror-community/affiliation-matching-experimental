@@ -41,25 +41,24 @@ def check_file_differ_but_any_match(file_path):
 def is_differ_but_any_match(row):
     strategies = row['consensus_strategies'].split(';')
     ror_id = row['ror_id']
-    strategy_ror_ids = [row[strategy]
-                        for strategy in strategies if strategy in row and row[strategy]]
-    ror_id_match = any(
-        ror_id == strategy_ror_id for strategy_ror_id in strategy_ror_ids)
-    strategies_differ = len(set(strategy_ror_ids)) > 1
+    strategy_ror_ids = {row[strategy]
+                        for strategy in strategies if strategy in row and row[strategy]}
+    ror_id_match = ror_id in strategy_ror_ids
+    strategies_differ = len(strategy_ror_ids) > 1
     return ror_id_match and strategies_differ
 
 
 def write_differ_but_any_match_to_csv(mismatches, output_file):
-        if mismatches:
-            with open(output_file, mode='w', encoding='utf-8') as file:
-                fieldnames = list(mismatches[0][1].keys()) + ['Source File']
-                writer = csv.DictWriter(file, fieldnames=fieldnames)
-                writer.writeheader()
-                for filename, mismatch in mismatches:
-                    mismatch_row = {**mismatch, 'Source File': filename}
-                    writer.writerow(mismatch_row)
-        else:
-            print("No mismatches found to write to CSV.")
+    if mismatches:
+        with open(output_file, mode='w', encoding='utf-8') as file:
+            fieldnames = list(mismatches[0][1].keys()) + ['Source File']
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            for filename, mismatch in mismatches:
+                mismatch_row = {**mismatch, 'Source File': filename}
+                writer.writerow(mismatch_row)
+    else:
+        print("No mismatches found to write to CSV.")
 
 
 def main():
