@@ -4,6 +4,7 @@ import argparse
 from itertools import combinations
 from collections import defaultdict
 
+ALL_STRATEGIES = ['ror-affiliation', 'fasttext', 'openalex', 'S2AFF']
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -25,8 +26,7 @@ def read_csv(file_path):
 
 
 def find_consensus(row):
-    strategies = ['ror-affiliation', 'fasttext', 'openalex', 'S2AFF']
-    values = [row[strategy] for strategy in strategies]
+    values = [row[strategy] for strategy in ALL_STRATEGIES]
     for value in values:
         value_counts[value] += 1
     consensus_sets = []
@@ -49,9 +49,8 @@ def write_csv(output_dir, filename, data):
 
 def process_data(input_data):
     output_data = defaultdict(list)
-    all_strategies = ['ror-affiliation', 'fasttext', 'openalex', 'S2AFF']
-    strategy_combinations = ['_'.join(comb) for i in range(2, len(all_strategies) + 1) 
-                             for comb in combinations(all_strategies, i)]
+    strategy_combinations = ['_'.join(comb) for i in range(2, len(ALL_STRATEGIES) + 1) 
+                             for comb in combinations(ALL_STRATEGIES, i)]
     for row in input_data:
         consensus_sets = find_consensus(row)
         consensus_dict = {frozenset(consensus_set): row[consensus_set[0]] for consensus_set in consensus_sets}
