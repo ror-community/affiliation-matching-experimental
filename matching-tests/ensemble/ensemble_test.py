@@ -4,6 +4,7 @@ import logging
 import requests
 from datetime import datetime
 from predictor import Predictor
+from timer import LoopTimerContext
 
 PREDICTOR = Predictor('models/')
 now = datetime.now()
@@ -12,23 +13,23 @@ logging.basicConfig(filename=f'{script_start}_ensemble_test.log', level=logging.
 
 
 def query_affiliation(affiliation):
-    chosen_result = None
-    try:
-        url = "https://api.ror.org/organizations"
-        params = {"affiliation": affiliation}
-        r = requests.get(url, params=params)
-        api_response = r.json()
-        results = api_response['items']
-        if results:
-            for result in results:
-                if result['chosen']:
-                    chosen_id = result['organization']['id']
-                    score = result['score']
-                    chosen_result = chosen_id, score
-                    break
-    except Exception as e:
-        logging.error(f'Error for query: {affiliation} - {e}')
-    return chosen_result
+	chosen_result = None
+	try:
+		url = "https://api.ror.org/organizations"
+		params = {"affiliation": affiliation}
+		r = requests.get(url, params=params)
+		api_response = r.json()
+		results = api_response['items']
+		if results:
+			for result in results:
+				if result['chosen']:
+					chosen_id = result['organization']['id']
+					score = result['score']
+					chosen_result = chosen_id, score
+					break
+	except Exception as e:
+		logging.error(f'Error for query: {affiliation} - {e}')
+	return chosen_result
 
 
 def ensemble_match(affiliation, min_fasttext_probability, match_order='fasttext'):
@@ -53,6 +54,7 @@ def ensemble_match(affiliation, min_fasttext_probability, match_order='fasttext'
 
 def parse_and_query(input_file, output_file, min_fasttext_probability, match_order):
 	try:
+		timed = LoopTimerContext()
 		with open(input_file, 'r+', encoding='utf-8-sig') as f_in, open(output_file, 'w') as f_out:
 			reader = csv.DictReader(f_in)
 			fieldnames = reader.fieldnames + \
@@ -60,14 +62,16 @@ def parse_and_query(input_file, output_file, min_fasttext_probability, match_ord
 			writer = csv.DictWriter(f_out, fieldnames=fieldnames)
 			writer.writeheader()
 			for row in reader:
-			    affiliation = row['affiliation']
-			    prediction = ensemble_match(affiliation, min_fasttext_probability, match_order)
-			    predicted_id, prediction_score = prediction if prediction else (None, None)
-			    row.update({
-			        "predicted_ror_id": predicted_id,
-			        "prediction_score": prediction_score,
-			    })
-			    writer.writerow(row)
+				with timed:
+					affiliation = row['affiliation']
+					prediction = ensemble_match(affiliation, min_fasttext_probability, match_order)
+					predicted_id, prediction_score = prediction if prediction else (None, None)
+					row.update({
+						"predicted_ror_id": predicted_id,
+						"prediction_score": prediction_score,
+					})
+					writer.writerow(row)
+		return timed
 	except Exception as e:
 		logging.error(f'Error in parse_and_query: {e}')
 
@@ -87,8 +91,9 @@ def parse_arguments():
 
 def main():
 	args = parse_arguments()
-	parse_and_query(args.input, args.output,
+	timed = parse_and_query(args.input, args.output,
 					args.min_fasttext_probability, args.match_order)
+	timed.write_stats_to_csv("ensemble_timing_stats.csv")
 
 
 if __name__ == '__main__':
