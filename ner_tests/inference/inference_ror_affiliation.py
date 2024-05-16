@@ -3,8 +3,27 @@ import csv
 import argparse
 import torch
 from transformers import BertTokenizerFast, BertForTokenClassification
+from unidecode import unidecode
+from gensim.parsing.preprocessing import (
+    preprocess_string,
+    strip_tags,
+    strip_punctuation,
+    strip_multiple_whitespaces,
+)
 
 MAX_LEN = 128
+
+
+def normalize_and_split(affiliation):
+    custom_filters = [
+        lambda x: x.lower(),
+        strip_tags,
+        strip_punctuation,
+        strip_multiple_whitespaces,
+    ]
+    affiliation = unidecode(
+        " ".join(preprocess_string(affiliation, custom_filters)))
+    return affiliation.split()
 
 
 def load_model(model_path):
@@ -19,7 +38,7 @@ def load_tokenizer(model_name):
 
 
 def preprocess_input(tokenizer, affiliation):
-    inputs = tokenizer(affiliation.split(),
+    inputs = tokenizer(affiliation,
                        is_split_into_words=True,
                        return_offsets_mapping=True,
                        padding="max_length",
@@ -59,33 +78,31 @@ def postprocess_output(tokenizer, ids, flattened_predictions, inputs):
 
 
 def construct_string(affiliation, prediction):
-    split_affiliation = affiliation.split()
     entities = []
     temp_entity = []
     tags_and_strings = {}
     for i in range(len(prediction)):
         tag = prediction[i]
-        tags_and_strings[i] = f'{tag}: {split_affiliation[i]}'
+        tags_and_strings[i] = f'{tag}: {affiliation[i]}'
         if tag in ["B-ORG", "I-ORG", "B-LOC", "I-LOC"]:
             if temp_entity and tag in ["B-ORG", "B-LOC"]:
                 entities.append(" ".join(temp_entity))
                 temp_entity = []
 
-            temp_entity.append(split_affiliation[i])
+            temp_entity.append(affiliation[i])
         else:
             if temp_entity:
                 entities.append(" ".join(temp_entity))
                 temp_entity = []
     if temp_entity:
         entities.append(" ".join(temp_entity))
-    print(tags_and_strings)
     entities = [re.sub(',', '', entity) for entity in entities]
     joined_prediction = ", ".join(entities)
     return joined_prediction
 
 
 def ner_inference(affiliation, model, tokenizer):
-    affiliation = affiliation.lower()
+    affiliation = normalize_and_split(affiliation)
     inputs = preprocess_input(tokenizer, affiliation)
     ids, flattened_predictions = conduct_inference(model, inputs)
     prediction = postprocess_output(
